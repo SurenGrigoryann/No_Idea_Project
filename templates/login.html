@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign In</title>
+  <title>Sign In — FuelForge</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +30,6 @@
       padding: 1.5rem;
     }
 
-    /* Subtle radial glow behind card */
     body::before {
       content: '';
       position: fixed;
@@ -171,8 +170,8 @@
   <div class="card">
 
     <div class="brand">
-      <div class="brand-icon">A</div>
-      <span class="brand-name">Acme</span>
+      <div class="brand-icon">F</div>
+      <span class="brand-name">FuelForge</span>
     </div>
 
     <h1>Welcome back</h1>
@@ -205,7 +204,7 @@
     </form>
 
     <p class="footer">
-      Don't have an account? <a href="#">Request access</a>
+      Don't have an account? <a href="{{ url_for('register.register') }}">Create one</a>
     </p>
 
   </div>

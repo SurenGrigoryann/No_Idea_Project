@@ -61,6 +61,26 @@ def translate(uid, gemini_json):
             ))
 
     conn.commit()
+
+    # ── Save grocery list ────────────────────────────────────────────
+    grocery = gemini_json.get("weekly_grocery_list", {})
+
+    conn.execute("DELETE FROM grocery_items WHERE user_id = ?", (uid,))
+    conn.execute("DELETE FROM grocery_meta WHERE user_id = ?", (uid,))
+
+    for category, items in grocery.items():
+        if category == "total_estimated_weekly_cost" or not isinstance(items, list):
+            continue
+        for item_obj in items:
+            conn.execute("""
+                INSERT INTO grocery_items (user_id, category, item, quantity, est_cost)
+                VALUES (?, ?, ?, ?, ?)
+            """, (uid, category, item_obj.get("item", ""), item_obj.get("quantity", ""), item_obj.get("est_cost", "")))
+
+    total_cost = grocery.get("total_estimated_weekly_cost", "")
+    conn.execute("INSERT INTO grocery_meta (user_id, total_cost) VALUES (?, ?)", (uid, total_cost))
+
+    conn.commit()
     conn.close()
     print(f"✓ Meal plan saved for user {uid} — {len(gemini_json['meal_plan'])} days")
 

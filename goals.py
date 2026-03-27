@@ -1,3 +1,7 @@
+import json
+import os
+import threading
+
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from datetime import date
 from database import get_db, upsert_weight_log
@@ -5,6 +9,121 @@ from database import get_db, upsert_weight_log
 goals_bp = Blueprint("goals", __name__)
 
 VALID_ACTIVITY_LEVELS = {"very_low", "low", "medium", "high", "very_high"}
+
+ACTIVITY_LABELS = {
+    "very_low":  "Sedentary",
+    "low":       "Lightly Active",
+    "medium":    "Moderately Active",
+    "high":      "Very Active",
+    "very_high": "Athlete",
+}
+
+
+def _load_gemini_key():
+    key = os.environ.get("GEMINI_API_KEY")
+    if key:
+        return key
+    env_path = os.path.join(os.path.dirname(__file__), ".env")
+    try:
+        with open(env_path) as f:
+            for line in f:
+                if line.startswith("GEMINI_API_KEY="):
+                    return line.split("=", 1)[1].strip()
+    except FileNotFoundError:
+        pass
+    return None
+
+
+def _generate_meal_plan(uid):
+    """Calls Gemini and saves the result. Runs in a background thread."""
+    from translate import translate
+
+    api_key = _load_gemini_key()
+    if not api_key:
+        print("⚠ No GEMINI_API_KEY found — skipping meal plan generation")
+        return
+
+    conn = get_db()
+    user = dict(conn.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone())
+    goal = conn.execute(
+        "SELECT * FROM goals WHERE user_id=? AND status='active' ORDER BY created DESC LIMIT 1",
+        (uid,)
+    ).fetchone()
+    conn.close()
+
+    if not goal:
+        return
+
+    goal = dict(goal)
+    activity_text = ACTIVITY_LABELS.get(user.get("activity_level", "medium"), "Moderately Active")
+
+    prompt = f"""You are an expert nutritionist and meal planning AI. Your job is to create a complete, personalized 7-day meal plan based on the user's physical stats and goals.
+User Stats:
+
+Height: {user['height']} cm
+Current Weight: {user['weight']} kg
+Goal Weight: {goal['goal_weight']} kg
+Age: {user['age']}
+Activity Level: {activity_text} (Sedentary / Lightly Active / Moderately Active / Very Active / Athlete)
+
+Your task — return ALL of the following:
+DAILY CALORIE & MACRO TARGETS
+Calculate TDEE based on the stats above, then adjust calories for the goal (cut/bulk/maintain). Return daily targets for: Calories, Protein (g), Carbs (g), Fat (g).
+7-DAY MEAL PLAN
+For each day (Day 1 through Day 7), provide exactly 4 meals: Breakfast, Lunch, Dinner, and a Snack. For each meal include:
+
+Meal name
+Ingredients with exact quantities
+Step-by-step cooking instructions
+Full macro breakdown (calories, protein, carbs, fat)
+WEEKLY GROCERY LIST
+Combine all ingredients from all 7 days. Group them into categories: Proteins, Carbs, Vegetables, Fruits, Pantry. For each item include the total quantity needed for the week and estimated cost. Show the total estimated weekly cost at the end.
+RULES YOU MUST FOLLOW:
+
+Every meal must hit close to the daily macro targets
+No meal should repeat more than once across the 7 days
+Meals must be realistic, easy to cook, and use affordable whole foods
+
+Return everything as clean structured JSON so it can be parsed by a web app
+
+Return the entire response as valid JSON only. No extra text, no markdown, no explanation outside the JSON."""
+
+    try:
+        import time
+        from google import genai as new_genai
+        client = new_genai.Client(api_key=api_key)
+
+        # Retry up to 3 times on rate limit (429)
+        response = None
+        for attempt in range(3):
+            try:
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=prompt,
+                    config={"max_output_tokens": 8200},
+                )
+                break
+            except Exception as retry_err:
+                if "429" in str(retry_err) and attempt < 2:
+                    wait = 30 * (attempt + 1)
+                    print(f"⚠ Rate limited, retrying in {wait}s...")
+                    time.sleep(wait)
+                else:
+                    raise
+
+        text = response.text.strip() if hasattr(response, "text") else response.candidates[0].content.parts[0].text.strip()
+        # Strip markdown code fences if Gemini adds them
+        if text.startswith("```"):
+            text = text.split("```", 2)[1]
+            if text.startswith("json"):
+                text = text[4:]
+            text = text.strip()
+
+        data = json.loads(text)
+        translate(uid=uid, gemini_json=data)
+        print(f"✓ Gemini meal plan generated and saved for user {uid}")
+    except Exception as e:
+        print(f"⚠ Gemini meal plan generation failed for user {uid}: {e}")
 
 
 @goals_bp.route("/goals", methods=["GET", "POST"])
@@ -99,7 +218,11 @@ def goals():
 
         conn.commit()
         conn.close()
-        flash("Goal saved!", "success")
+
+        # Fire Gemini in the background so the page redirects immediately
+        threading.Thread(target=_generate_meal_plan, args=(uid,), daemon=True).start()
+
+        flash("Goal saved! Your meal plan is being generated in the background.", "success")
         return redirect(url_for("goals.goals"))
 
     # ── GET ──────────────────────────────────────────────────────────────

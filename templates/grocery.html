@@ -16,7 +16,6 @@
       --border-solid:   #222222;
       --text:           #e8e8e8;
       --muted:          #666666;
-      --nav-active-bg:  #16a34a;
       --blue:           #3b82f6;
       --purple:         #a855f7;
       --green:          #22c55e;
@@ -61,260 +60,101 @@
     .nav-links a.active { background: #1db97a; color: #0a0e0b !important; font-weight: 600; }
 
     /* ── Page layout ── */
-    .page {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 48px 40px 80px;
-    }
+    .page { max-width: 1000px; margin: 0 auto; padding: 48px 40px 80px; }
 
     /* ── Hero ── */
-    .page-hero {
-      margin-bottom: 36px;
-    }
+    .page-hero { margin-bottom: 36px; }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      border: 1.5px solid var(--badge-border);
-      border-radius: 999px;
-      padding: 5px 14px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      color: var(--badge-border);
-      text-transform: uppercase;
-      margin-bottom: 18px;
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1.5px solid var(--badge-border); border-radius: 999px;
+      padding: 5px 14px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; color: var(--badge-border);
+      text-transform: uppercase; margin-bottom: 18px;
     }
-
-    .badge svg {
-      width: 13px;
-      height: 13px;
-      stroke: var(--badge-border);
-      stroke-width: 2.5;
-    }
+    .badge svg { width: 13px; height: 13px; stroke: var(--badge-border); stroke-width: 2.5; }
 
     .page-hero h1 {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 52px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.1;
-      margin-bottom: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 52px;
+      font-weight: 700; color: var(--text); line-height: 1.1; margin-bottom: 10px;
     }
-
-    .page-hero .subtitle {
-      font-size: 15px;
-      font-weight: 400;
-      color: var(--muted);
-    }
+    .page-hero .subtitle { font-size: 15px; font-weight: 400; color: var(--muted); }
 
     /* ── Summary card ── */
     .summary-card {
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px 28px;
-      margin-bottom: 24px;
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px 28px; margin-bottom: 24px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
-
     .summary-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;
     }
-
-    .summary-left {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .summary-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .summary-stats {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .stat-item svg {
-      width: 18px;
-      height: 18px;
-      stroke-width: 2;
-      flex-shrink: 0;
-    }
-
+    .summary-left { display: flex; flex-direction: column; gap: 12px; }
+    .summary-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .summary-stats { display: flex; align-items: center; gap: 20px; }
+    .stat-item { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 500; color: var(--text); }
+    .stat-item svg { width: 18px; height: 18px; stroke-width: 2; flex-shrink: 0; }
     .stat-item.check svg { stroke: var(--green); }
     .stat-item.dollar svg { stroke: var(--blue); }
 
     .export-btn {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 9px 20px;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 20px; background: transparent;
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+      color: var(--text); font-family: inherit; font-size: 13px;
+      font-weight: 500; cursor: pointer; transition: border-color 0.2s, background 0.2s;
       align-self: flex-start;
     }
+    .export-btn:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.04); }
+    .export-btn svg { width: 14px; height: 14px; stroke-width: 2; }
 
-    .export-btn:hover {
-      border-color: rgba(255,255,255,0.4);
-      background: rgba(255,255,255,0.04);
-    }
-
-    .export-btn svg {
-      width: 14px;
-      height: 14px;
-      stroke-width: 2;
-    }
-
-    .progress-track {
-      height: 5px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--green);
-      border-radius: 999px;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+    .progress-track { height: 5px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--green); border-radius: 999px; width: 0%; transition: width 0.3s ease; }
 
     /* ── Category sections ── */
-    .categories {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+    .categories { display: flex; flex-direction: column; gap: 16px; }
 
     .category-section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.3);
     }
-
     .category-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--row-divider);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid var(--row-divider);
     }
-
-    .category-name {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .category-total {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-    }
+    .category-name { font-size: 17px; font-weight: 700; color: var(--text); }
+    .category-total { font-size: 14px; font-weight: 500; color: var(--muted); }
 
     /* ── Item rows ── */
     .item-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 15px 22px;
-      border-bottom: 1px solid var(--row-divider);
-      cursor: pointer;
-      transition: background 0.15s;
+      display: flex; align-items: center; gap: 14px;
+      padding: 15px 22px; border-bottom: 1px solid var(--row-divider);
+      cursor: pointer; transition: background 0.15s;
     }
-
-    .item-row:last-child {
-      border-bottom: none;
-    }
-
-    .item-row:hover {
-      background: rgba(255,255,255,0.025);
-    }
+    .item-row:last-child { border-bottom: none; }
+    .item-row:hover { background: rgba(255,255,255,0.025); }
 
     .checkbox-circle {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 2px solid #3a3f4e;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid #3a3f4e; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
       transition: border-color 0.2s, background 0.2s;
     }
+    .checkbox-circle svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; opacity: 0; transition: opacity 0.15s; }
+    .item-row.checked .checkbox-circle svg { opacity: 1; }
 
-    .checkbox-circle svg {
-      width: 13px;
-      height: 13px;
-      stroke: #fff;
-      stroke-width: 2.5;
-      opacity: 0;
-      transition: opacity 0.15s;
-    }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-size: 15px; font-weight: 600; color: var(--text); transition: color 0.2s, text-decoration 0.2s; }
+    .item-row.checked .item-name { color: var(--muted); text-decoration: line-through; }
+    .item-qty { font-size: 13px; font-weight: 400; color: var(--muted); margin-top: 2px; }
+    .item-price { font-size: 15px; font-weight: 700; margin-left: auto; flex-shrink: 0; }
 
-    .item-row.checked .checkbox-circle svg {
-      opacity: 1;
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center; padding: 60px 20px; color: var(--muted);
     }
-
-    .item-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .item-name {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-      transition: color 0.2s, text-decoration 0.2s;
-    }
-
-    .item-row.checked .item-name {
-      color: var(--muted);
-      text-decoration: line-through;
-    }
-
-    .item-qty {
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .item-price {
-      font-size: 15px;
-      font-weight: 700;
-      margin-left: auto;
-      flex-shrink: 0;
-    }
+    .empty-state p { font-size: 16px; margin-bottom: 8px; }
+    .empty-state span { font-size: 13px; }
 
     .btn-logout {
       text-decoration: none; color: #5a7060; font-size: .82rem; font-weight: 500;
@@ -323,7 +163,6 @@
     }
     .btn-logout:hover { color: #e8eeea; border-color: #14894f; }
 
-    /* ── Responsive ── */
     @media (max-width: 768px) {
       nav { padding: 0 20px; }
       .page { padding: 32px 20px 60px; }
@@ -331,13 +170,11 @@
       .summary-top { flex-direction: column; align-items: flex-start; gap: 16px; }
       .nav-links a span { display: none; }
       .nav-links a { padding: 7px 10px; }
-      .btn-logout span { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── Navigation ── -->
   <nav>
     <div class="logo">
       <div class="logo-icon">🔥</div>
@@ -356,10 +193,15 @@
     <a href="/logout" class="btn-logout">Log out</a>
   </nav>
 
-  <!-- ── Page ── -->
+  {% set cat_config = {
+    'proteins':               {'label': 'Proteins',              'color': '#3b82f6', 'bg': 'rgba(59,130,246,0.06)'},
+    'carbs':                  {'label': 'Carbs',                 'color': '#a855f7', 'bg': 'rgba(168,85,247,0.06)'},
+    'vegetables_and_fruits':  {'label': 'Vegetables & Fruits',   'color': '#22c55e', 'bg': 'rgba(34,197,94,0.06)'},
+    'pantry':                 {'label': 'Pantry',                'color': '#eab308', 'bg': 'rgba(234,179,8,0.06)'},
+  } %}
+
   <main class="page">
 
-    <!-- Hero -->
     <div class="page-hero">
       <div class="badge">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -372,34 +214,23 @@
       <p class="subtitle">Everything you need for your 7-day meal plan</p>
     </div>
 
-    <!-- Summary card -->
     <div class="summary-card">
       <div class="summary-top">
         <div class="summary-left">
           <div class="summary-title">Shopping Summary</div>
           <div class="summary-stats">
             <div class="stat-item check">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="9 12 11 14 15 10"/>
-              </svg>
-              <span id="progress-text">0 / 30 items</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+              <span id="progress-text">0 / {{ total_items }} items</span>
             </div>
             <div class="stat-item dollar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <line x1="12" y1="1" x2="12" y2="23"/>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-              </svg>
-              <span>Total: $322.04</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <span>Total: {{ total_cost if total_cost else '—' }}</span>
             </div>
           </div>
         </div>
-        <button class="export-btn" onclick="exportList()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
+        <button class="export-btn" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export List
         </button>
       </div>
@@ -408,360 +239,46 @@
       </div>
     </div>
 
-    <!-- Categories -->
+    {% if categories %}
     <div class="categories">
-
-      <!-- Proteins -->
+      {% for cat in categories %}
+      {% set cfg = cat_config.get(cat.key, {'label': cat.key|title, 'color': '#888', 'bg': 'rgba(128,128,128,0.06)'}) %}
       <div class="category-section">
-        <div class="category-header" style="background: rgba(59,130,246,0.06);">
-          <span class="category-name">Proteins</span>
-          <span class="category-total">$143.93</span>
+        <div class="category-header" style="background: {{ cfg.bg }};">
+          <span class="category-name">{{ cfg.label }}</span>
+          <span class="category-total">{{ cat.total }}</span>
         </div>
-        <div class="item-row" onclick="toggleItem(this, '#3b82f6')">
+        {% for item in cat.items %}
+        <div class="item-row" onclick="toggleItem(this, '{{ cfg.color }}')">
           <div class="checkbox-circle">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <div class="item-info">
-            <div class="item-name">Chicken breast</div>
-            <div class="item-qty">3 lbs</div>
+            <div class="item-name">{{ item.item }}</div>
+            <div class="item-qty">{{ item.quantity }}</div>
           </div>
-          <span class="item-price" style="color:#3b82f6">$18.99</span>
+          <span class="item-price" style="color: {{ cfg.color }}">{{ item.est_cost }}</span>
         </div>
-        <div class="item-row" onclick="toggleItem(this, '#3b82f6')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Salmon fillets</div>
-            <div class="item-qty">1.5 lbs</div>
-          </div>
-          <span class="item-price" style="color:#3b82f6">$24.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#3b82f6')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Ground turkey</div>
-            <div class="item-qty">3 lbs</div>
-          </div>
-          <span class="item-price" style="color:#3b82f6">$14.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#3b82f6')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Greek yogurt</div>
-            <div class="item-qty">4 containers</div>
-          </div>
-          <span class="item-price" style="color:#3b82f6">$11.96</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#3b82f6')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Eggs</div>
-            <div class="item-qty">2 dozen</div>
-          </div>
-          <span class="item-price" style="color:#3b82f6">$9.98</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#3b82f6')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Cottage cheese</div>
-            <div class="item-qty">2 containers</div>
-          </div>
-          <span class="item-price" style="color:#3b82f6">$7.98</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#3b82f6')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Whey protein powder</div>
-            <div class="item-qty">1 bag</div>
-          </div>
-          <span class="item-price" style="color:#3b82f6">$55.04</span>
-        </div>
+        {% endfor %}
       </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>No grocery list yet.</p>
+      <span>Generate a meal plan first and your grocery list will appear here.</span>
+    </div>
+    {% endif %}
 
-      <!-- Carbs -->
-      <div class="category-section">
-        <div class="category-header" style="background: rgba(168,85,247,0.06);">
-          <span class="category-name">Carbs</span>
-          <span class="category-total">$39.94</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#a855f7')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Brown rice</div>
-            <div class="item-qty">2 lbs</div>
-          </div>
-          <span class="item-price" style="color:#a855f7">$4.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#a855f7')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Quinoa</div>
-            <div class="item-qty">1 lb</div>
-          </div>
-          <span class="item-price" style="color:#a855f7">$7.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#a855f7')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Rolled oats</div>
-            <div class="item-qty">2 lbs</div>
-          </div>
-          <span class="item-price" style="color:#a855f7">$5.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#a855f7')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Sweet potatoes</div>
-            <div class="item-qty">5 lbs</div>
-          </div>
-          <span class="item-price" style="color:#a855f7">$8.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#a855f7')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Whole grain bread</div>
-            <div class="item-qty">1 loaf</div>
-          </div>
-          <span class="item-price" style="color:#a855f7">$4.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#a855f7')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Regular potatoes</div>
-            <div class="item-qty">5 lbs</div>
-          </div>
-          <span class="item-price" style="color:#a855f7">$6.99</span>
-        </div>
-      </div>
-
-      <!-- Vegetables -->
-      <div class="category-section">
-        <div class="category-header" style="background: rgba(34,197,94,0.06);">
-          <span class="category-name">Vegetables</span>
-          <span class="category-total">$46.88</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#22c55e')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Mixed greens</div>
-            <div class="item-qty">3 bags</div>
-          </div>
-          <span class="item-price" style="color:#22c55e">$11.97</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#22c55e')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Broccoli</div>
-            <div class="item-qty">2 bunches</div>
-          </div>
-          <span class="item-price" style="color:#22c55e">$5.98</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#22c55e')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Spinach</div>
-            <div class="item-qty">2 bags</div>
-          </div>
-          <span class="item-price" style="color:#22c55e">$7.98</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#22c55e')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Cherry tomatoes</div>
-            <div class="item-qty">2 containers</div>
-          </div>
-          <span class="item-price" style="color:#22c55e">$7.98</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#22c55e')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Mixed vegetables (frozen)</div>
-            <div class="item-qty">2 bags</div>
-          </div>
-          <span class="item-price" style="color:#22c55e">$8.98</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#22c55e')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Cucumber</div>
-            <div class="item-qty">3 pieces</div>
-          </div>
-          <span class="item-price" style="color:#22c55e">$3.99</span>
-        </div>
-      </div>
-
-      <!-- Fruits -->
-      <div class="category-section">
-        <div class="category-header" style="background: rgba(249,115,22,0.06);">
-          <span class="category-name">Fruits</span>
-          <span class="category-total">$35.88</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#f97316')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Mixed berries</div>
-            <div class="item-qty">3 containers</div>
-          </div>
-          <span class="item-price" style="color:#f97316">$14.97</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#f97316')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Bananas</div>
-            <div class="item-qty">2 bunches</div>
-          </div>
-          <span class="item-price" style="color:#f97316">$4.98</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#f97316')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Avocados</div>
-            <div class="item-qty">6 pieces</div>
-          </div>
-          <span class="item-price" style="color:#f97316">$11.94</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#f97316')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Lemons</div>
-            <div class="item-qty">5 pieces</div>
-          </div>
-          <span class="item-price" style="color:#f97316">$3.99</span>
-        </div>
-      </div>
-
-      <!-- Pantry -->
-      <div class="category-section">
-        <div class="category-header" style="background: rgba(234,179,8,0.06);">
-          <span class="category-name">Pantry</span>
-          <span class="category-total">$55.41</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#eab308')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Almond butter</div>
-            <div class="item-qty">1 jar</div>
-          </div>
-          <span class="item-price" style="color:#eab308">$9.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#eab308')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Olive oil</div>
-            <div class="item-qty">1 bottle</div>
-          </div>
-          <span class="item-price" style="color:#eab308">$12.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#eab308')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Balsamic vinaigrette</div>
-            <div class="item-qty">1 bottle</div>
-          </div>
-          <span class="item-price" style="color:#eab308">$5.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#eab308')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Tahini</div>
-            <div class="item-qty">1 jar</div>
-          </div>
-          <span class="item-price" style="color:#eab308">$7.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#eab308')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Teriyaki sauce</div>
-            <div class="item-qty">1 bottle</div>
-          </div>
-          <span class="item-price" style="color:#eab308">$4.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#eab308')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Honey</div>
-            <div class="item-qty">1 jar</div>
-          </div>
-          <span class="item-price" style="color:#eab308">$8.99</span>
-        </div>
-        <div class="item-row" onclick="toggleItem(this, '#eab308')">
-          <div class="checkbox-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="item-info">
-            <div class="item-name">Chickpeas (canned)</div>
-            <div class="item-qty">3 cans</div>
-          </div>
-          <span class="item-price" style="color:#eab308">$4.47</span>
-        </div>
-      </div>
-
-    </div><!-- /categories -->
   </main>
 
   <script>
-    const TOTAL_ITEMS = 30;
+    const TOTAL_ITEMS = {{ total_items }};
     let checkedCount = 0;
 
     function toggleItem(row, accentColor) {
       const isChecked = row.classList.toggle('checked');
       const circle = row.querySelector('.checkbox-circle');
-
       if (isChecked) {
         circle.style.background = accentColor;
         circle.style.borderColor = accentColor;
@@ -771,19 +288,10 @@
         circle.style.borderColor = '';
         checkedCount--;
       }
-
-      updateProgress();
-    }
-
-    function updateProgress() {
       document.getElementById('progress-text').textContent =
         checkedCount + ' / ' + TOTAL_ITEMS + ' items';
-      const pct = (checkedCount / TOTAL_ITEMS) * 100;
-      document.getElementById('progress-fill').style.width = pct + '%';
-    }
-
-    function exportList() {
-      window.print();
+      document.getElementById('progress-fill').style.width =
+        (TOTAL_ITEMS ? (checkedCount / TOTAL_ITEMS) * 100 : 0) + '%';
     }
   </script>
 

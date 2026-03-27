@@ -145,6 +145,28 @@ def init_db():
         )
     """)
 
+    # ── Grocery items ─────────────────────────────────────────
+    # Structured grocery list from Gemini, grouped by category.
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS grocery_items (
+            id       INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            category TEXT    NOT NULL,
+            item     TEXT    NOT NULL,
+            quantity TEXT    DEFAULT '',
+            est_cost TEXT    DEFAULT ''
+        )
+    """)
+
+    # ── Grocery meta ──────────────────────────────────────────
+    # One row per user — stores the weekly total estimated cost.
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS grocery_meta (
+            user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+            total_cost TEXT    DEFAULT ''
+        )
+    """)
+
     conn.commit()
 
     # ── Safe migrations (won't fail on fresh DB) ─────────────

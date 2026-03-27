@@ -1,8 +1,10 @@
-import json
+from collections import defaultdict
 from flask import Blueprint, render_template, session, redirect, url_for
 from database import get_db
 
 grocery_bp = Blueprint("grocery", __name__)
+
+CATEGORY_ORDER = ["proteins", "carbs", "vegetables_and_fruits", "pantry"]
 
 
 @grocery_bp.route("/grocery")
@@ -13,24 +15,44 @@ def grocery():
     uid  = session["uid"]
     conn = get_db()
 
-    # Pull all meal ingredients from the user's meal plan
-    meals = conn.execute("""
-        SELECT m.ingredients
-        FROM meal_plan_meals m
-        JOIN meal_plan_days d ON m.day_id = d.id
-        WHERE d.user_id = ?
+    rows = conn.execute("""
+        SELECT category, item, quantity, est_cost
+        FROM grocery_items WHERE user_id = ?
+        ORDER BY id
     """, (uid,)).fetchall()
+
+    meta = conn.execute(
+        "SELECT total_cost FROM grocery_meta WHERE user_id = ?", (uid,)
+    ).fetchone()
+
     conn.close()
 
-    # Flatten + deduplicate
-    ingredient_set = set()
-    for row in meals:
-        try:
-            for item in json.loads(row["ingredients"] or "[]"):
-                ingredient_set.add(item.strip())
-        except (json.JSONDecodeError, TypeError):
-            pass
+    # Group by category, compute per-category total
+    raw = defaultdict(list)
+    for row in rows:
+        raw[row["category"]].append(dict(row))
 
-    grocery_list = sorted(ingredient_set)
+    categories = []
+    for key in CATEGORY_ORDER:
+        items = raw.get(key, [])
+        if not items:
+            continue
+        total = 0.0
+        for item in items:
+            try:
+                total += float(item["est_cost"].replace("$", "").replace(",", ""))
+            except (ValueError, AttributeError):
+                pass
+        categories.append({
+            "key":   key,
+            "items": items,
+            "total": f"${total:.2f}",
+        })
 
-    return render_template("grocery.html", grocery_list=grocery_list)
+    total_cost  = meta["total_cost"] if meta else ""
+    total_items = len(rows)
+
+    return render_template("grocery.html",
+                           categories=categories,
+                           total_cost=total_cost,
+                           total_items=total_items)

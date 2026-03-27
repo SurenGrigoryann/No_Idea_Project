@@ -123,6 +123,16 @@
   }
   .progress-info { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
 
+  /* ── DELETE BUTTON ── */
+  .btn-delete-goal {
+    background: none; border: none; cursor: pointer;
+    color: #555; font-size: 16px; line-height: 1;
+    padding: 2px 6px; border-radius: 6px;
+    transition: color .2s, background .2s;
+    flex-shrink: 0;
+  }
+  .btn-delete-goal:hover { color: #ff5555; background: #ff555518; }
+
   /* ── NEW GOAL FORM ── */
   .form-grid {
     display: grid;
@@ -196,6 +206,60 @@
   .profile-note {
     font-size: 12px; color: #444; margin-top: 8px;
   }
+
+  /* ── DELETE MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    border-radius: 18px;
+    padding: 36px 32px 28px;
+    max-width: 400px; width: 90%;
+    box-shadow: 0 24px 60px rgba(0,0,0,.6);
+    animation: modalIn .18s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(.94) translateY(10px); }
+    to   { opacity: 1; transform: scale(1)  translateY(0); }
+  }
+  .modal-icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: #ff444418; border: 1px solid #ff444433;
+    display: grid; place-items: center;
+    font-size: 22px; margin: 0 auto 20px;
+  }
+  .modal-title {
+    font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px;
+  }
+  .modal-body {
+    font-size: 13px; color: #888; text-align: center; line-height: 1.6; margin-bottom: 28px;
+  }
+  .modal-body strong { color: #e8e8e8; font-weight: 600; }
+  .modal-actions { display: flex; gap: 10px; }
+  .btn-cancel-modal {
+    flex: 1; padding: 12px; border-radius: 10px;
+    border: 1px solid #2a2a2a; background: none;
+    color: #888; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-cancel-modal:hover { border-color: #444; color: #e8e8e8; }
+  .btn-confirm-delete {
+    flex: 1; padding: 12px; border-radius: 10px;
+    border: none; background: #ff4444;
+    color: #fff; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+    transition: background .2s, transform .1s;
+  }
+  .btn-confirm-delete:hover { background: #ff2222; transform: translateY(-1px); }
+  .btn-confirm-delete:active { transform: translateY(0); }
 </style>
 </head>
 <body>
@@ -272,7 +336,18 @@
             <div class="goal-title">{{ g.title }}</div>
             <div class="status-badge {{ g.status }}">{{ g.status | upper }}</div>
           </div>
-          <div class="goal-deadline">Deadline: {{ g.deadline }}</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="goal-deadline">Deadline: {{ g.deadline }}</div>
+            {% if not loop.last %}
+            <form method="POST" action="{{ url_for('goals.goals') }}" style="margin:0;">
+              <input type="hidden" name="action" value="delete_goal"/>
+              <input type="hidden" name="goal_id" value="{{ g.id }}"/>
+              <button type="button" class="btn-delete-goal"
+                data-id="{{ g.id }}" data-title="{{ g.title }}"
+                onclick="openDeleteModal(this.dataset.id, this.dataset.title)">✕</button>
+            </form>
+            {% endif %}
+          </div>
         </div>
         <div class="goal-weights">
           <div class="gw-item">
@@ -358,6 +433,41 @@
   </div>
 
 </main>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-title">Delete Goal?</div>
+    <div class="modal-body">
+      Are you sure you want to delete<br>
+      <strong id="modalGoalName"></strong>?<br>
+      This action cannot be undone.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeDeleteModal()">Cancel</button>
+      <form id="deleteForm" method="POST" action="{{ url_for('goals.goals') }}" style="flex:1; display:flex;">
+        <input type="hidden" name="action" value="delete_goal"/>
+        <input type="hidden" name="goal_id" id="modalGoalId"/>
+        <button type="submit" class="btn-confirm-delete">Yes, Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openDeleteModal(id, title) {
+    document.getElementById('modalGoalId').value = id;
+    document.getElementById('modalGoalName').textContent = title;
+    document.getElementById('deleteModal').classList.add('open');
+  }
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+  }
+  document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+</script>
 
 </body>
 </html>

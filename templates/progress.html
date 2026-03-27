@@ -5,6 +5,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FUELFORGE – Progress</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,37 +18,36 @@
 
   /* ── NAV ── */
   nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 48px;
-    border-bottom: 1px solid #1f1f1f;
-    background: #0d0d0d;
-    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .9rem 2.5rem; border-bottom: 1px solid #1f2a22;
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,14,11,.92); backdrop-filter: blur(12px);
   }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand-icon {
-    width: 36px; height: 36px; background: #00c97a;
-    border-radius: 8px; display: flex; align-items: center;
-    justify-content: center; font-weight: 900; font-size: 14px; color: #0d0d0d;
+  .logo { display: flex; align-items: center; gap: .75rem; }
+  .logo-icon {
+    width: 38px; height: 38px; background: #1db97a;
+    border-radius: 9px; display: grid; place-items: center; font-size: 1.1rem;
   }
-  .brand-text { font-weight: 800; font-size: 16px; letter-spacing: 1px; }
-  .brand-sub { font-size: 10px; color: #666; letter-spacing: 0.5px; }
-  .nav-links { display: flex; gap: 8px; }
+  .logo-text { line-height: 1; }
+  .logo-text strong {
+    display: block; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.25rem; letter-spacing: .1em; color: #e8eeea;
+  }
+  .logo-text span { font-size: .7rem; color: #5a7060; font-weight: 300; }
+  .nav-links { display: flex; align-items: center; gap: .3rem; list-style: none; }
   .nav-links a {
-    text-decoration: none; color: #999; font-size: 14px;
-    padding: 7px 16px; border-radius: 20px; transition: all .2s;
+    text-decoration: none; color: #5a7060; font-size: .88rem; font-weight: 500;
+    padding: .5rem .9rem; border-radius: 8px;
+    display: flex; align-items: center; gap: .4rem; transition: color .2s, background .2s;
   }
-  .nav-links a:hover { color: #fff; }
-  .nav-links a.active {
-    background: #00c97a; color: #0d0d0d; font-weight: 600;
-  }
+  .nav-links a:hover { color: #e8eeea; background: #161d18; }
+  .nav-links a.active { background: #1db97a; color: #0a0e0b !important; font-weight: 600; }
   .btn-logout {
-    text-decoration: none; color: #666; font-size: 13px;
-    padding: 6px 14px; border-radius: 20px; border: 1px solid #2a2a2a;
-    transition: all .2s; margin-left: 8px;
+    text-decoration: none; color: #5a7060; font-size: .82rem; font-weight: 500;
+    padding: .45rem .9rem; border-radius: 8px; border: 1px solid #1f2a22;
+    margin-left: .5rem; transition: color .2s, border-color .2s;
   }
-  .btn-logout:hover { color: #e8e8e8; border-color: #555; }
+  .btn-logout:hover { color: #e8eeea; border-color: #14894f; }
 
   /* ── MAIN ── */
   main { max-width: 780px; margin: 0 auto; padding: 48px 24px 80px; }
@@ -176,20 +176,20 @@
 <body>
 
 <nav>
-  <div class="brand">
-    <div class="brand-icon">FF</div>
-    <div>
-      <div class="brand-text">FUELFORGE</div>
-      <div class="brand-sub">AI Meal Planner</div>
+  <div class="logo">
+    <div class="logo-icon">🔥</div>
+    <div class="logo-text">
+      <strong>FUELFORGE</strong>
+      <span>AI Meal Planner</span>
     </div>
   </div>
-  <div class="nav-links">
-    <a href="/home">Home</a>
-    <a href="/meal-plan">Meal Plan</a>
-    <a href="/progress" class="active">Progress</a>
-    <a href="/grocery">Grocery</a>
-    <a href="/goals">Goals</a>
-  </div>
+  <ul class="nav-links">
+    <li><a href="/home">🏠 Home</a></li>
+    <li><a href="/meal-plan">📋 Meal Plan</a></li>
+    <li><a href="/progress" class="active">📈 Progress</a></li>
+    <li><a href="/grocery">🛒 Grocery</a></li>
+    <li><a href="/goals">🎯 Goals</a></li>
+  </ul>
   <a href="/logout" class="btn-logout">Log out</a>
 </nav>
 

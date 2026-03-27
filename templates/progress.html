@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{{ d.app_name }} – Progress</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d0d0d;
+    color: #e8e8e8;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 48px;
+    border-bottom: 1px solid #1f1f1f;
+    background: #0d0d0d;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 36px; height: 36px; background: #00c97a;
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 14px; color: #0d0d0d;
+  }
+  .brand-text { font-weight: 800; font-size: 16px; letter-spacing: 1px; }
+  .brand-sub { font-size: 10px; color: #666; letter-spacing: 0.5px; }
+  .nav-links { display: flex; gap: 8px; }
+  .nav-links a {
+    text-decoration: none; color: #999; font-size: 14px;
+    padding: 7px 16px; border-radius: 20px; transition: all .2s;
+  }
+  .nav-links a:hover { color: #fff; }
+  .nav-links a.active {
+    background: #00c97a; color: #0d0d0d; font-weight: 600;
+  }
+
+  /* ── MAIN ── */
+  main { max-width: 780px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 36px; }
+
+  /* ── CARDS GRID ── */
+  .cards-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .card {
+    background: #161616;
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 22px 22px 18px;
+    position: relative;
+  }
+  .card.highlight { border-color: #00c97a44; background: #0e1f18; }
+  .card-label { font-size: 12px; color: #666; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .card-value { font-size: 42px; font-weight: 800; line-height: 1; }
+  .card-value span { font-size: 18px; font-weight: 400; color: #888; margin-left: 2px; }
+  .card-meta { font-size: 12px; color: #555; margin-top: 8px; }
+  .green { color: #00c97a; }
+  .purple { color: #a78bfa; }
+  .badge-down {
+    background: #00c97a22; color: #00c97a;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
+  }
+  .dot-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid #a78bfa44;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  /* ── PROGRESS SECTION ── */
+  .section {
+    background: #161616; border: 1px solid #222;
+    border-radius: 14px; padding: 26px 28px; margin-bottom: 20px;
+  }
+  .section-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .section-title { font-size: 18px; font-weight: 700; }
+  .section-sub { font-size: 12px; color: #555; margin-bottom: 18px; }
+  .pct { font-size: 32px; font-weight: 800; color: #00c97a; }
+  .pct-label { font-size: 11px; color: #555; text-align: right; }
+  .progress-bar-bg {
+    background: #252525; border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 28px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00c97a, #00ff9d);
+    border-radius: 8px;
+    transition: width .6s ease;
+  }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; }
+  .stat-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .stat-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .stat-icon.green-bg { background: #00c97a22; }
+  .stat-icon.purple-bg { background: #a78bfa22; }
+  .stat-icon.blue-bg { background: #60a5fa22; }
+  .stat-val { font-size: 22px; font-weight: 800; }
+  .stat-lbl { font-size: 11px; color: #555; }
+  .blue { color: #60a5fa; }
+
+  /* ── STREAKS ── */
+  .streaks-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .streak-card {
+    background: #161616; border: 1px solid #222;
+    border-radius: 14px; padding: 20px;
+  }
+  .streak-card.fire-bg { background: #1a1008; border-color: #f97316aa; }
+  .streak-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .streak-icon {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .streak-icon.orange { background: #f9731622; }
+  .streak-icon.gold   { background: #facc1522; }
+  .streak-icon.blue   { background: #60a5fa22; }
+  .streak-label { font-size: 12px; color: #888; }
+  .streak-value { font-size: 28px; font-weight: 800; }
+  .streak-value.orange { color: #f97316; }
+  .streak-value.gold   { color: #facc15; }
+  .streak-value.blue   { color: #60a5fa; }
+  .streak-unit { font-size: 14px; font-weight: 400; color: #888; margin-left: 3px; }
+  .streak-note { font-size: 11px; color: #555; margin-top: 6px; }
+
+  /* ── CRUSHING IT ── */
+  .crushing-card {
+    background: linear-gradient(135deg, #0b2318 0%, #0d2a1e 60%, #112b1c 100%);
+    border: 1px solid #1a4a30;
+    border-radius: 14px;
+    padding: 32px 28px 28px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .crushing-icon {
+    width: 52px; height: 52px; background: #00c97a22;
+    border: 2px solid #00c97a55;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 22px;
+    margin: 0 auto 16px;
+  }
+  .crushing-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .crushing-sub { font-size: 14px; color: #888; margin-bottom: 24px; }
+  .crushing-sub b { color: #00c97a; font-weight: 700; }
+  .crushing-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .c-stat {
+    background: #0d0d0d88;
+    border: 1px solid #1f1f1f;
+    border-radius: 10px;
+    padding: 14px 10px;
+  }
+  .c-stat-val { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .c-stat-val.green { color: #00c97a; }
+  .c-stat-lbl { font-size: 11px; color: #555; }
+
+  /* ── CHART ── */
+  .chart-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .chart-sub { font-size: 12px; color: #555; margin-bottom: 20px; }
+  .chart-wrap { position: relative; height: 240px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">
+    <div class="brand-icon">FF</div>
+    <div>
+      <div class="brand-text">{{ d.app_name }}</div>
+      <div class="brand-sub">{{ d.tagline }}</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    {% for item in d.nav %}
+      <a href="#" class="{{ 'active' if item == d.active_nav else '' }}">{{ item }}</a>
+    {% endfor %}
+  </div>
+</nav>
+
+<main>
+  <h1>Your Journey</h1>
+  <p class="subtitle">Track your progress and stay motivated</p>
+
+  <!-- Weight Cards -->
+  <div class="cards-row">
+    <div class="card">
+      <div class="card-label">Starting Weight <span>▾</span></div>
+      <div class="card-value">{{ d.starting_weight }}<span>kg</span></div>
+      <div class="card-meta">{{ d.starting_date }}</div>
+    </div>
+    <div class="card highlight">
+      <div class="card-label">Current Weight <span class="badge-down">▾ {{ d.weight_change }}kg</span></div>
+      <div class="card-value green">{{ d.current_weight }}<span>kg</span></div>
+      <div class="card-meta">Last updated today</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Goal Weight <span class="dot-icon">🎯</span></div>
+      <div class="card-value purple">{{ d.goal_weight }}<span>kg</span></div>
+      <div class="card-meta">{{ d.kg_to_go }}kg to go</div>
+    </div>
+  </div>
+
+  <!-- Overall Progress -->
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Overall Progress</div>
+        <div class="section-sub">{{ d.kg_lost }}kg lost of {{ d.goal_total_kg }}kg goal</div>
+      </div>
+      <div style="text-align:right">
+        <div class="pct">{{ d.progress_pct }}%</div>
+        <div class="pct-label">Complete</div>
+      </div>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" style="width:{{ d.progress_pct }}%"></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-icon green-bg">⬇</div>
+        <div class="stat-val green">{{ d.kg_lost }}kg</div>
+        <div class="stat-lbl">Lost</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon purple-bg">🎯</div>
+        <div class="stat-val purple">{{ d.kg_remaining }}kg</div>
+        <div class="stat-lbl">Remaining</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon blue-bg">📅</div>
+        <div class="stat-val blue">{{ d.days_on_journey }}</div>
+        <div class="stat-lbl">Days</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Streaks -->
+  <div class="streaks-row">
+    <div class="streak-card fire-bg">
+      <div class="streak-header">
+        <div class="streak-icon orange">🔥</div>
+        <div class="streak-label">Current Streak</div>
+      </div>
+      <div class="streak-value orange">{{ d.current_streak }}<span class="streak-unit">days</span></div>
+      <div class="streak-note">Keep it up! You're on fire 🔥</div>
+    </div>
+    <div class="streak-card">
+      <div class="streak-header">
+        <div class="streak-icon gold">🏆</div>
+        <div class="streak-label">Longest Streak</div>
+      </div>
+      <div class="streak-value gold">{{ d.longest_streak }}<span class="streak-unit">days</span></div>
+      <div class="streak-note">Personal record</div>
+    </div>
+    <div class="streak-card">
+      <div class="streak-header">
+        <div class="streak-icon blue">📅</div>
+        <div class="streak-label">Total Active Days</div>
+      </div>
+      <div class="streak-value blue">{{ d.total_active_days }}<span class="streak-unit">days</span></div>
+      <div class="streak-note">{{ d.consistency_pct }}% consistency</div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="section">
+    <div class="chart-title">Weight Over Time</div>
+    <div class="chart-sub">Your weight loss journey visualized</div>
+    <div class="chart-wrap">
+      <canvas id="weightChart"></canvas>
+    </div>
+    <div style="display:flex;gap:20px;justify-content:center;margin-top:16px;font-size:12px;color:#888;">
+      <span><span style="color:#00c97a">──</span> Your Weight</span>
+      <span><span style="color:#a78bfa">- -</span> Goal Weight</span>
+    </div>
+  </div>
+  <!-- Crushing It -->
+  <div class="crushing-card">
+    <div class="crushing-icon">📈</div>
+    <div class="crushing-title">You're Crushing It!</div>
+    <div class="crushing-sub">You've lost <b>{{ d.kg_lost }}kg</b> in {{ d.days_on_journey }} days</div>
+    <div class="crushing-stats">
+      <div class="c-stat">
+        <div class="c-stat-val">{{ d.kg_per_day }}</div>
+        <div class="c-stat-lbl">kg/day avg</div>
+      </div>
+      <div class="c-stat">
+        <div class="c-stat-val">{{ d.weeks_in }}</div>
+        <div class="c-stat-lbl">weeks in</div>
+      </div>
+      <div class="c-stat">
+        <div class="c-stat-val">{{ d.days_to_goal }}</div>
+        <div class="c-stat-lbl">days to goal</div>
+      </div>
+      <div class="c-stat">
+        <div class="c-stat-val green">{{ d.progress_pct }}%</div>
+        <div class="c-stat-lbl">complete</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const labels = {{ d.chart_labels | tojson }};
+const weights = {{ d.chart_weights | tojson }};
+const goal = {{ d.goal_line }};
+
+const ctx = document.getElementById('weightChart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: 'Your Weight',
+        data: weights,
+        borderColor: '#00c97a',
+        backgroundColor: 'rgba(0,201,122,0.08)',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#00c97a',
+        pointRadius: 5,
+        tension: 0.35,
+        fill: true,
+      },
+      {
+        label: 'Goal Weight',
+        data: Array(labels.length).fill(goal),
+        borderColor: '#a78bfa',
+        borderWidth: 1.5,
+        borderDash: [6, 4],
+        pointRadius: 0,
+        fill: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        grid: { color: '#1e1e1e' },
+        ticks: { color: '#555', font: { size: 11 } }
+      },
+      y: {
+        grid: { color: '#1e1e1e' },
+        ticks: { color: '#555', font: { size: 11 } },
+        min: Math.min(...weights, goal) - 2,
+        max: Math.max(...weights) + 2,
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

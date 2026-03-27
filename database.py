@@ -117,7 +117,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-    print("✓ fuelforge.db created and all tables ready.")
+    print("fuelforge.db created and all tables ready.")
 
 
 if __name__ == "__main__":

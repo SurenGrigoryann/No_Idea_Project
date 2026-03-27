@@ -1,6 +1,10 @@
-from flask import Blueprint, render_template
+from flask import Flask, Blueprint, render_template
+import os
  
 home_bp = Blueprint('home', __name__)
+ 
+# ── Standalone runner (remove when plugging into main.py) ──
+_app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
  
 @home_bp.route('/')
 @home_bp.route('/home')
@@ -40,3 +44,8 @@ def home():
     ]
  
     return render_template('home.html', stats=stats, meals=meals)
+ 
+ 
+if __name__ == '__main__':
+    _app.register_blueprint(home_bp)
+    _app.run(debug=True)

@@ -248,7 +248,7 @@
           <span class="category-name">{{ cfg.label }}</span>
           <span class="category-total">{{ cat.total }}</span>
         </div>
-        {% for item in cat.items %}
+        {% for item in cat['items'] %}
         <div class="item-row" onclick="toggleItem(this, '{{ cfg.color }}')">
           <div class="checkbox-circle">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>

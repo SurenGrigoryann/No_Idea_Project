@@ -57,59 +57,104 @@ def _generate_meal_plan(uid):
     goal = dict(goal)
     activity_text = ACTIVITY_LABELS.get(user.get("activity_level", "medium"), "Moderately Active")
 
-    prompt = f"""You are an expert nutritionist and meal planning AI. Your job is to create a complete, personalized 7-day meal plan based on the user's physical stats and goals.
-User Stats:
+    prompt = f"""You are a nutritionist AI. Generate a personalized 7-day meal plan for the user below.
 
-Height: {user['height']} cm
-Current Weight: {user['weight']} kg
-Goal Weight: {goal['goal_weight']} kg
-Age: {user['age']}
-Activity Level: {activity_text} (Sedentary / Lightly Active / Moderately Active / Very Active / Athlete)
+USER STATS:
+- Height: {user['height']} cm
+- Current Weight: {user['weight']} kg
+- Goal Weight: {goal['goal_weight']} kg
+- Age: {user['age']} years
+- Activity Level: {activity_text}
 
-Your task — return ALL of the following:
-DAILY CALORIE & MACRO TARGETS
-Calculate TDEE based on the stats above, then adjust calories for the goal (cut/bulk/maintain). Return daily targets for: Calories, Protein (g), Carbs (g), Fat (g).
-7-DAY MEAL PLAN
-For each day (Day 1 through Day 7), provide exactly 4 meals: Breakfast, Lunch, Dinner, and a Snack. For each meal include:
+CRITICAL INSTRUCTIONS:
+1. Your entire response must be a single valid JSON object.
+2. Do NOT include any text before or after the JSON.
+3. Do NOT use markdown, code fences, or backticks.
+4. Do NOT add comments inside the JSON.
+5. Use EXACTLY the key names shown below — no uppercase, no underscores changed, no extra keys.
+6. "meal_plan" must be a JSON array [ ] containing exactly 7 objects, one per day.
+7. Each day object must have "day" (integer 1-7) and "meals" (object with keys: breakfast, lunch, dinner, snack).
+8. Each meal must have: "name" (string), "ingredients" (array of strings), "instructions" (array of strings), "macros" (object with keys: calories, protein, carbs, fat — all numbers).
+9. No meal name may repeat across the 7 days.
+10. "weekly_grocery_list" must have exactly these keys: "proteins", "carbs", "vegetables_and_fruits", "pantry", "total_estimated_weekly_cost".
+11. Each grocery item must have exactly: "item" (string), "quantity" (string), "est_cost" (string).
 
-Meal name
-Ingredients with exact quantities
-Step-by-step cooking instructions
-Full macro breakdown (calories, protein, carbs, fat)
-WEEKLY GROCERY LIST
-Combine all ingredients from all 7 days. Group them into categories: Proteins, Carbs, Vegetables, Fruits, Pantry. For each item include the total quantity needed for the week and estimated cost. Show the total estimated weekly cost at the end.
-RULES YOU MUST FOLLOW:
+OUTPUT THIS EXACT JSON STRUCTURE (replace values, keep all key names identical):
 
-Every meal must hit close to the daily macro targets
-No meal should repeat more than once across the 7 days
-Meals must be realistic, easy to cook, and use affordable whole foods
+{{
+  "daily_calorie_and_macro_targets": {{
+    "calculation_notes": "BMR and TDEE calculation notes here",
+    "targets": {{
+      "calories": 2500,
+      "protein_g": 150,
+      "carbs_g": 300,
+      "fat_g": 70
+    }}
+  }},
+  "meal_plan": [
+    {{
+      "day": 1,
+      "meals": {{
+        "breakfast": {{
+          "name": "Meal name here",
+          "ingredients": ["100g oats", "1 banana"],
+          "instructions": ["Step 1", "Step 2"],
+          "macros": {{"calories": 500, "protein": 30, "carbs": 80, "fat": 10}}
+        }},
+        "lunch": {{
+          "name": "Meal name here",
+          "ingredients": ["200g chicken breast", "150g rice"],
+          "instructions": ["Step 1", "Step 2"],
+          "macros": {{"calories": 600, "protein": 50, "carbs": 70, "fat": 12}}
+        }},
+        "dinner": {{
+          "name": "Meal name here",
+          "ingredients": ["200g salmon", "400g potatoes"],
+          "instructions": ["Step 1", "Step 2"],
+          "macros": {{"calories": 700, "protein": 45, "carbs": 80, "fat": 22}}
+        }},
+        "snack": {{
+          "name": "Meal name here",
+          "ingredients": ["200g greek yogurt", "50g granola"],
+          "instructions": ["Step 1"],
+          "macros": {{"calories": 300, "protein": 20, "carbs": 40, "fat": 8}}
+        }}
+      }}
+    }},
+    {{ "day": 2, "meals": {{ "breakfast": {{}}, "lunch": {{}}, "dinner": {{}}, "snack": {{}} }} }},
+    {{ "day": 3, "meals": {{ "breakfast": {{}}, "lunch": {{}}, "dinner": {{}}, "snack": {{}} }} }},
+    {{ "day": 4, "meals": {{ "breakfast": {{}}, "lunch": {{}}, "dinner": {{}}, "snack": {{}} }} }},
+    {{ "day": 5, "meals": {{ "breakfast": {{}}, "lunch": {{}}, "dinner": {{}}, "snack": {{}} }} }},
+    {{ "day": 6, "meals": {{ "breakfast": {{}}, "lunch": {{}}, "dinner": {{}}, "snack": {{}} }} }},
+    {{ "day": 7, "meals": {{ "breakfast": {{}}, "lunch": {{}}, "dinner": {{}}, "snack": {{}} }} }}
+  ],
+  "weekly_grocery_list": {{
+    "proteins": [
+      {{"item": "Chicken Breast", "quantity": "700g", "est_cost": "$10.00"}}
+    ],
+    "carbs": [
+      {{"item": "Rolled Oats", "quantity": "500g", "est_cost": "$3.00"}}
+    ],
+    "vegetables_and_fruits": [
+      {{"item": "Bananas", "quantity": "7 pieces", "est_cost": "$2.00"}}
+    ],
+    "pantry": [
+      {{"item": "Olive Oil", "quantity": "1 bottle", "est_cost": "$6.00"}}
+    ],
+    "total_estimated_weekly_cost": "$150.00"
+  }}
+}}
 
-Return everything as clean structured JSON so it can be parsed by a web app
-
-Return the entire response as valid JSON only. No extra text, no markdown, no explanation outside the JSON."""
+Now generate the full 7-day plan for the user stats above. Return ONLY the JSON."""
 
     try:
-        import time
         from google import genai as new_genai
         client = new_genai.Client(api_key=api_key)
-
-        # Retry up to 3 times on rate limit (429)
-        response = None
-        for attempt in range(3):
-            try:
-                response = client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=prompt,
-                    config={"max_output_tokens": 8200},
-                )
-                break
-            except Exception as retry_err:
-                if "429" in str(retry_err) and attempt < 2:
-                    wait = 30 * (attempt + 1)
-                    print(f"⚠ Rate limited, retrying in {wait}s...")
-                    time.sleep(wait)
-                else:
-                    raise
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config={"max_output_tokens": 32000, "thinking_config": {"thinking_budget": 0}},
+        )
 
         text = response.text.strip() if hasattr(response, "text") else response.candidates[0].content.parts[0].text.strip()
         # Strip markdown code fences if Gemini adds them
@@ -120,6 +165,20 @@ Return the entire response as valid JSON only. No extra text, no markdown, no ex
             text = text.strip()
 
         data = json.loads(text)
+
+        # Normalize keys in case Gemini uses different names
+        normalized = {}
+        for k, v in data.items():
+            kl = k.lower()
+            if "meal_plan" in kl or "seven" in kl or "7" in kl:
+                normalized["meal_plan"] = v
+            elif "calorie" in kl or "macro" in kl:
+                normalized["daily_calorie_and_macro_targets"] = v
+            elif "grocery" in kl:
+                normalized["weekly_grocery_list"] = v
+        if "meal_plan" in normalized:
+            data = normalized
+
         translate(uid=uid, gemini_json=data)
         print(f"✓ Gemini meal plan generated and saved for user {uid}")
     except Exception as e:

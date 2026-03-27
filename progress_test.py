@@ -1,42 +1,105 @@
-from flask import Blueprint, render_template
- 
+from flask import Blueprint, render_template, session, redirect, url_for
+from datetime import date, timedelta
+from database import get_db
+
 progress_bp = Blueprint('progress', __name__)
- 
-# --- Dummy data (replace with DB queries later) ---
-data = {
-    "app_name": "FUELFORGE",
-    "tagline": "AI Meal Planner",
-    "nav": ["Home", "Meal Plan", "Progress", "Grocery", "Scanner"],
-    "active_nav": "Progress",
- 
-    "starting_weight": 92,
-    "starting_date": "February 14, 2026",
-    "current_weight": 85,
-    "weight_change": -7,
-    "goal_weight": 80,
-    "kg_to_go": 5.0,
- 
-    "kg_lost": 7,
-    "kg_remaining": 5.0,
-    "days_on_journey": 40,
-    "goal_total_kg": 12,
-    "progress_pct": 20,
- 
-    "current_streak": 12,
-    "longest_streak": 15,
-    "total_active_days": 38,
-    "consistency_pct": 95,
- 
-    "chart_labels": ["Feb 14", "Feb 21", "Feb 28", "Mar 7", "Mar 14", "Mar 21", "Mar 26"],
-    "chart_weights": [92, 91, 90, 88.5, 87, 86, 85],
-    "goal_line": 80,
- 
-    "kg_per_day": 0.17,
-    "weeks_in": 3.5,
-    "days_to_goal": 29,
-}
- 
- 
+
+
+def update_streak(uid, conn):
+    """Auto-update login streak on each /progress visit."""
+    user = dict(conn.execute("SELECT * FROM users WHERE id = ?", (uid,)).fetchone())
+    today     = date.today().isoformat()
+    yesterday = (date.today() - timedelta(days=1)).isoformat()
+    last      = user.get("last_login_date", "")
+
+    if last == today:
+        return user  # already counted today
+
+    new_streak = user["current_streak"] + 1 if last == yesterday else 1
+    longest    = max(user["longest_streak"], new_streak)
+    total      = user["total_active_days"] + 1
+
+    conn.execute("""
+        UPDATE users
+        SET current_streak=?, longest_streak=?, total_active_days=?, last_login_date=?
+        WHERE id=?
+    """, (new_streak, longest, total, today, uid))
+    conn.commit()
+
+    user.update({"current_streak": new_streak, "longest_streak": longest,
+                 "total_active_days": total, "last_login_date": today})
+    return user
+
+
 @progress_bp.route('/progress')
 def progress():
+    if "uid" not in session:
+        return redirect(url_for("login"))
+
+    uid  = session["uid"]
+    conn = get_db()
+
+    # Update streak and load user profile
+    user = update_streak(uid, conn)
+
+    # Weight logs for chart
+    logs = conn.execute(
+        "SELECT date, weight FROM weight_logs WHERE user_id=? ORDER BY date", (uid,)
+    ).fetchall()
+    chart_labels  = [r["date"]   for r in logs]
+    chart_weights = [r["weight"] for r in logs]
+
+    # Most recent active goal
+    goal = conn.execute(
+        "SELECT * FROM goals WHERE user_id=? AND status='active' ORDER BY id DESC LIMIT 1",
+        (uid,)
+    ).fetchone()
+    conn.close()
+
+    goal      = dict(goal) if goal else {}
+    start_w   = goal.get("start_weight", user["weight"])
+    goal_w    = goal.get("goal_weight",  user["weight"])
+    current_w = user["weight"]
+
+    kg_lost      = round(start_w - current_w, 1)
+    goal_total   = round(abs(start_w - goal_w), 1)
+    progress_pct = round((kg_lost / goal_total * 100) if goal_total else 0, 1)
+
+    days_on_journey = max(len(logs), user["total_active_days"], 1)
+    kg_per_day      = round(kg_lost / days_on_journey, 2) if days_on_journey else 0
+    days_to_goal    = round((current_w - goal_w) / kg_per_day) if kg_per_day > 0 else 0
+
+    data = {
+        "app_name":         "FUELFORGE",
+        "tagline":          "AI Meal Planner",
+        "nav":              ["Home", "Meal Plan", "Progress", "Goals", "Grocery", "Scanner"],
+        "active_nav":       "Progress",
+
+        "starting_weight":  start_w,
+        "starting_date":    goal.get("created", ""),
+        "current_weight":   current_w,
+        "weight_change":    round(current_w - start_w, 1),
+        "goal_weight":      goal_w,
+        "kg_to_go":         round(current_w - goal_w, 1),
+
+        "kg_lost":          kg_lost,
+        "kg_remaining":     round(current_w - goal_w, 1),
+        "days_on_journey":  days_on_journey,
+        "goal_total_kg":    goal_total,
+        "progress_pct":     progress_pct,
+
+        "current_streak":   user["current_streak"],
+        "longest_streak":   user["longest_streak"],
+        "total_active_days":user["total_active_days"],
+        "consistency_pct":  round(user["total_active_days"] / days_on_journey * 100),
+
+        "chart_labels":     chart_labels,
+        "chart_weights":    chart_weights,
+        "goal_line":        goal_w,
+
+        "kg_per_day":       kg_per_day,
+        "weeks_in":         round(days_on_journey / 7, 1),
+        "days_to_goal":     days_to_goal,
+    }
+
     return render_template('progress.html', d=data)

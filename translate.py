@@ -1,11 +1,60 @@
 import json
+import os
+import requests
 from database import get_db
+
+
+def _fetch_image(meal_name):
+    """Search Google Images for the meal and return the first image URL found."""
+    api_key = os.environ.get("GOOGLE_SEARCH_API_KEY")
+    cse_id  = os.environ.get("GOOGLE_CSE_ID")
+
+    # Also try reading from .env file if not in environment
+    if not api_key or not cse_id:
+        env_path = os.path.join(os.path.dirname(__file__), ".env")
+        try:
+            with open(env_path) as f:
+                for line in f:
+                    if line.startswith("GOOGLE_SEARCH_API_KEY="):
+                        api_key = line.split("=", 1)[1].strip()
+                    elif line.startswith("GOOGLE_CSE_ID="):
+                        cse_id = line.split("=", 1)[1].strip()
+        except FileNotFoundError:
+            pass
+
+    if not api_key or not cse_id:
+        return ""
+
+    try:
+        resp = requests.get(
+            "https://www.googleapis.com/customsearch/v1",
+            params={
+                "key":        api_key,
+                "cx":         cse_id,
+                "q":          f"{meal_name} food recipe",
+                "searchType": "image",
+                "num":        1,
+                "imgSize":    "LARGE",
+                "safe":       "active",
+            },
+            timeout=10,
+        )
+        data = resp.json()
+        items = data.get("items", [])
+        if items:
+            return items[0].get("link", "")
+    except Exception as e:
+        print(f"⚠ Image search failed for '{meal_name}': {e}")
+
+    return ""
+
 
 def translate(uid, gemini_json):
     """
     Parses Gemini's JSON response and saves:
     - Meal plan days + meals  → meal_plan_days, meal_plan_meals
-    - Grocery list            → used by grocery.py automatically (reads from meals)
+    - Grocery list            → grocery_items, grocery_meta
+    - Images fetched from Google Images for each meal
     """
 
     conn = get_db()
@@ -42,22 +91,27 @@ def translate(uid, gemini_json):
 
         day_id = cursor.lastrowid
 
-        # Insert each meal (breakfast, lunch, dinner, snack)
+        # Insert each meal with Google Image
         for meal_type, meal_data in meals.items():
+            meal_name  = meal_data["name"]
+            image_url  = _fetch_image(meal_name)
+            print(f"  🖼 Image for '{meal_name}': {image_url or 'not found'}")
+
             conn.execute("""
-                INSERT INTO meal_plan_meals 
-                    (day_id, type, name, calories, protein, carbs, fat, ingredients, instructions)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO meal_plan_meals
+                    (day_id, type, name, calories, protein, carbs, fat, ingredients, instructions, image)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 day_id,
                 meal_type.capitalize(),
-                meal_data["name"],
+                meal_name,
                 meal_data["macros"]["calories"],
                 meal_data["macros"]["protein"],
                 meal_data["macros"]["carbs"],
                 meal_data["macros"]["fat"],
                 json.dumps(meal_data["ingredients"]),
                 json.dumps(meal_data["instructions"]),
+                image_url,
             ))
 
     conn.commit()

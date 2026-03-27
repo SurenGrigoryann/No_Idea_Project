@@ -287,6 +287,7 @@
     </div>
     <div style="display:flex;gap:20px;justify-content:center;margin-top:16px;font-size:12px;color:#888;">
       <span><span style="color:#00c97a">&#9472;&#9472;</span> Your Weight</span>
+      <span><span style="color:#60a5fa">- -</span> Predicted</span>
       <span><span style="color:#a78bfa">- -</span> Goal Weight</span>
     </div>
   </div>
@@ -318,9 +319,14 @@
 </main>
 
 <script>
-const labels  = {{ d.chart_labels | tojson }};
-const weights = {{ d.chart_weights | tojson }};
-const goal    = {{ d.goal_line }};
+const labels    = {{ d.chart_labels    | tojson }};
+const weights   = {{ d.chart_weights   | tojson }};
+const predicted = {{ d.chart_predicted | tojson }};
+const goal      = {{ d.goal_line }};
+
+const allVals = [...weights, ...predicted].filter(v => v !== null);
+const yMin = allVals.length ? Math.min(...allVals, goal) - 2 : goal - 10;
+const yMax = allVals.length ? Math.max(...allVals)       + 2 : goal + 10;
 
 const ctx = document.getElementById('weightChart').getContext('2d');
 new Chart(ctx, {
@@ -338,6 +344,20 @@ new Chart(ctx, {
         pointRadius: 5,
         tension: 0.35,
         fill: true,
+        spanGaps: false,
+      },
+      {
+        label: 'Predicted Weight',
+        data: predicted,
+        borderColor: '#60a5fa',
+        backgroundColor: 'rgba(96,165,250,0.06)',
+        borderWidth: 2,
+        borderDash: [5, 4],
+        pointBackgroundColor: '#60a5fa',
+        pointRadius: 4,
+        tension: 0.35,
+        fill: false,
+        spanGaps: false,
       },
       {
         label: 'Goal Weight',
@@ -362,8 +382,8 @@ new Chart(ctx, {
       y: {
         grid: { color: '#1e1e1e' },
         ticks: { color: '#555', font: { size: 11 } },
-        min: weights.length ? Math.min(...weights, goal) - 2 : goal - 10,
-        max: weights.length ? Math.max(...weights) + 2    : goal + 10,
+        min: yMin,
+        max: yMax,
       }
     }
   }

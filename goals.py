@@ -76,7 +76,10 @@ def goals():
         deadline    = request.form.get("deadline", "").strip()
         height      = request.form.get("height", "").strip()
         age_val     = request.form.get("age", "").strip()
-        budget      = request.form.get("budget", "").strip()
+        budget         = request.form.get("budget", "").strip()
+        activity_level = request.form.get("activity_level", "").strip()
+
+        valid_activity_levels = {"very_low", "low", "medium", "high", "very_high"}
 
         if not title or not goal_weight or not current_w:
             flash("Goal name, current weight, and target weight are required.", "error")
@@ -91,6 +94,8 @@ def goals():
         if height:  profile["height"] = float(height)
         if age_val: profile["age"]    = int(age_val)
         if budget:  profile["budget"] = float(budget)
+        if activity_level and activity_level in valid_activity_levels:
+            profile["activity_level"] = activity_level
 
         set_clause = ", ".join(f"{k}=?" for k in profile)
         conn.execute(
@@ -137,6 +142,7 @@ def goals():
         "height":         user["height"],
         "age":            user["age"],
         "budget":         user["budget"],
+        "activity_level": user["activity_level"] or "medium",
         "goals":          goals_list,
     }
 

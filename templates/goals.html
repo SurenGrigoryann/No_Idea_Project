@@ -55,7 +55,7 @@
   /* ── PROFILE GRID ── */
   .profile-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-bottom: 20px;
   }
@@ -148,6 +148,25 @@
     width: 100%;
   }
   input:focus { border-color: #00c97a55; }
+  select {
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    color: #e8e8e8;
+    font-size: 15px;
+    font-family: inherit;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color .2s;
+    width: 100%;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  select:focus { border-color: #00c97a55; }
   .btn-create {
     width: 100%;
     background: #00c97a;
@@ -220,6 +239,19 @@
     <div class="card">
       <div class="card-label"><span class="icon">&#128176;</span> Budget</div>
       <div class="card-value gold">${{ d.budget }}<span>/wk</span></div>
+    </div>
+    <div class="card">
+      <div class="card-label"><span class="icon">&#9889;</span> Activity</div>
+      <div class="card-value" style="font-size:18px; line-height:1.3; padding-top:6px;">
+        {% set al = d.activity_level %}
+        {% if al == 'very_low' %}Very Low
+        {% elif al == 'low' %}Low
+        {% elif al == 'medium' %}Medium
+        {% elif al == 'high' %}High
+        {% elif al == 'very_high' %}Very High
+        {% else %}—
+        {% endif %}
+      </div>
     </div>
   </div>
 
@@ -308,6 +340,16 @@
         <div class="form-group">
           <label>Deadline</label>
           <input type="date" name="deadline"/>
+        </div>
+        <div class="form-group">
+          <label>Activity Level</label>
+          <select name="activity_level">
+            <option value="very_low"  {% if d.activity_level == 'very_low'  %}selected{% endif %}>Very Low</option>
+            <option value="low"       {% if d.activity_level == 'low'       %}selected{% endif %}>Low</option>
+            <option value="medium"    {% if d.activity_level == 'medium' or not d.activity_level %}selected{% endif %}>Medium</option>
+            <option value="high"      {% if d.activity_level == 'high'      %}selected{% endif %}>High</option>
+            <option value="very_high" {% if d.activity_level == 'very_high' %}selected{% endif %}>Very High</option>
+          </select>
         </div>
       </div>
       <button type="submit" class="btn-create">+ Create Goal</button>

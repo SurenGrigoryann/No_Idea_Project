@@ -35,6 +35,7 @@ def init_db():
             height            REAL    DEFAULT 0,
             age               INTEGER DEFAULT 0,
             budget            REAL    DEFAULT 0,
+            activity_level    TEXT    DEFAULT 'medium',
             current_streak    INTEGER DEFAULT 0,
             longest_streak    INTEGER DEFAULT 0,
             total_active_days INTEGER DEFAULT 0,
@@ -42,6 +43,11 @@ def init_db():
             created_at        TEXT    DEFAULT (date('now'))
         )
     """)
+
+    # Migration: add activity_level to existing databases
+    existing_cols = [row[1] for row in c.execute("PRAGMA table_info(users)").fetchall()]
+    if "activity_level" not in existing_cols:
+        c.execute("ALTER TABLE users ADD COLUMN activity_level TEXT DEFAULT 'medium'")
 
     # Goals
     c.execute("""

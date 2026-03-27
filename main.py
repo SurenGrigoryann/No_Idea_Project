@@ -3,6 +3,7 @@ import bcrypt
 from database import init_db, get_db
 from progress_test import progress_bp
 from home import home_bp
+
 from goals import goals_bp
 from mealPlan import meal_bp
 from grocery import grocery_bp

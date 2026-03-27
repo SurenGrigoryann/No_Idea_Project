@@ -40,6 +40,12 @@
   .nav-links a.active {
     background: #00c97a; color: #0d0d0d; font-weight: 600;
   }
+  .btn-logout {
+    text-decoration: none; color: #666; font-size: 13px;
+    padding: 6px 14px; border-radius: 20px; border: 1px solid #2a2a2a;
+    transition: all .2s; margin-left: 8px;
+  }
+  .btn-logout:hover { color: #e8e8e8; border-color: #555; }
 
   /* ── MAIN ── */
   main { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
@@ -191,6 +197,7 @@
     <a href="#">Grocery</a>
     <a href="#">Scanner</a>
   </div>
+  <a href="/logout" class="btn-logout">Log out</a>
 </nav>
 
 <main>

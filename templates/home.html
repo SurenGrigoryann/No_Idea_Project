@@ -94,6 +94,19 @@
       color: #0a0e0b !important;
       font-weight: 600;
     }
+
+    .btn-logout {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 500;
+      padding: .45rem .9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-left: .5rem;
+      transition: color .2s, border-color .2s;
+    }
+    .btn-logout:hover { color: var(--text); border-color: var(--green-dim); }
  
     /* ── MAIN CONTENT ────────────────────────── */
     main {
@@ -408,6 +421,7 @@
     <li><a href="#">🛒 Grocery</a></li>
     <li><a href="#">📷 Scanner</a></li>
   </ul>
+  <a href="/logout" class="btn-logout">Log out</a>
 </nav>
  
 <!-- ── MAIN ── -->

@@ -12,7 +12,19 @@
     color: #e8e8e8;
     font-family: 'Segoe UI', system-ui, sans-serif;
     min-height: 100vh;
+    overflow-x: hidden;
   }
+
+  /* ── ANIMATED BACKGROUND ── */
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  nav, main { position: relative; z-index: 1; }
 
   /* ── NAV ── */
   nav {
@@ -60,12 +72,13 @@
     margin-bottom: 20px;
   }
   .card {
-    background: #161616;
+    background: rgba(22,22,22,0.85);
     border: 1px solid #222;
     border-radius: 14px;
     padding: 22px 20px 18px;
+    backdrop-filter: blur(8px);
   }
-  .card.highlight { border-color: #00c97a44; background: #0e1f18; }
+  .card.highlight { border-color: #00c97a44; background: rgba(14,31,24,0.85); }
   .card-label { font-size: 12px; color: #666; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
   .card-label .icon { font-size: 14px; }
   .card-value { font-size: 36px; font-weight: 800; line-height: 1; }
@@ -77,8 +90,10 @@
 
   /* ── SECTION ── */
   .section {
-    background: #161616; border: 1px solid #222;
+    background: rgba(22,22,22,0.85);
+    border: 1px solid #222;
     border-radius: 14px; padding: 26px 28px; margin-bottom: 20px;
+    backdrop-filter: blur(8px);
   }
   .section-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
   .section-sub { font-size: 12px; color: #555; margin-bottom: 20px; }
@@ -86,12 +101,12 @@
   /* ── GOAL CARDS ── */
   .goals-list { display: flex; flex-direction: column; gap: 16px; }
   .goal-card {
-    background: #111; border: 1px solid #222;
+    background: rgba(17,17,17,0.9); border: 1px solid #222;
     border-radius: 12px; padding: 20px 22px;
     position: relative;
   }
-  .goal-card.active-goal { border-color: #00c97a44; background: #0b1a13; }
-  .goal-card.completed-goal { border-color: #a78bfa33; background: #110e1a; }
+  .goal-card.active-goal { border-color: #00c97a44; background: rgba(11,26,19,0.9); }
+  .goal-card.completed-goal { border-color: #a78bfa33; background: rgba(17,14,26,0.9); }
   .goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
   .goal-title-row { display: flex; align-items: center; gap: 10px; }
   .goal-title { font-size: 16px; font-weight: 700; }
@@ -203,9 +218,7 @@
   .divider-text { font-size: 12px; color: #444; }
 
   /* ── PROFILE EDIT NOTE ── */
-  .profile-note {
-    font-size: 12px; color: #444; margin-top: 8px;
-  }
+  .profile-note { font-size: 12px; color: #444; margin-top: 8px; }
 
   /* ── DELETE MODAL ── */
   .modal-overlay {
@@ -235,12 +248,8 @@
     display: grid; place-items: center;
     font-size: 22px; margin: 0 auto 20px;
   }
-  .modal-title {
-    font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px;
-  }
-  .modal-body {
-    font-size: 13px; color: #888; text-align: center; line-height: 1.6; margin-bottom: 28px;
-  }
+  .modal-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+  .modal-body { font-size: 13px; color: #888; text-align: center; line-height: 1.6; margin-bottom: 28px; }
   .modal-body strong { color: #e8e8e8; font-weight: 600; }
   .modal-actions { display: flex; gap: 10px; }
   .btn-cancel-modal {
@@ -263,6 +272,9 @@
 </style>
 </head>
 <body>
+
+<!-- ── ANIMATED BACKGROUND ── -->
+<canvas id="bg-canvas"></canvas>
 
 <nav>
   <div class="logo">
@@ -456,6 +468,87 @@
 </div>
 
 <script>
+  /* ── PARTICLE BACKGROUND ── */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function random(min, max) { return Math.random() * (max - min) + min; }
+
+  function createParticle() {
+    return {
+      x:     random(0, W),
+      y:     random(0, H),
+      r:     random(1, 3.5),
+      speedX: random(-0.3, 0.3),
+      speedY: random(-0.5, -0.1),
+      alpha:  random(0.1, 0.5),
+      color:  Math.random() > 0.5 ? '0,201,122' : '29,185,122',
+    };
+  }
+
+  function initParticles() {
+    particles = [];
+    const count = Math.floor((W * H) / 10000);
+    for (let i = 0; i < count; i++) particles.push(createParticle());
+  }
+
+  /* Soft glowing orbs drifting in the background */
+  const orbs = [
+    { x: 0.15, y: 0.2,  r: 280, color: '0,201,122',   alpha: 0.04, dx: 0.0002, dy: 0.00015 },
+    { x: 0.8,  y: 0.6,  r: 220, color: '167,139,250',  alpha: 0.04, dx:-0.00015,dy: 0.0002  },
+    { x: 0.5,  y: 0.9,  r: 180, color: '96,165,250',   alpha: 0.03, dx: 0.0001, dy:-0.00012 },
+  ];
+
+  let t = 0;
+
+  function drawOrbs() {
+    orbs.forEach(o => {
+      o.x += Math.sin(t * o.dx * 1000) * 0.0003;
+      o.y += Math.cos(t * o.dy * 1000) * 0.0003;
+      const grd = ctx.createRadialGradient(o.x*W, o.y*H, 0, o.x*W, o.y*H, o.r);
+      grd.addColorStop(0,   `rgba(${o.color},${o.alpha})`);
+      grd.addColorStop(1,   `rgba(${o.color},0)`);
+      ctx.beginPath();
+      ctx.arc(o.x*W, o.y*H, o.r, 0, Math.PI*2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+    });
+  }
+
+  function animate(ts) {
+    t = ts;
+    ctx.clearRect(0, 0, W, H);
+
+    drawOrbs();
+
+    particles.forEach((p, i) => {
+      p.x += p.speedX;
+      p.y += p.speedY;
+
+      if (p.y < -10) particles[i] = { ...createParticle(), y: H + 5 };
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+      ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  resize();
+  initParticles();
+  requestAnimationFrame(animate);
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+
+  /* ── MODAL ── */
   function openDeleteModal(id, title) {
     document.getElementById('modalGoalId').value = id;
     document.getElementById('modalGoalName').textContent = title;

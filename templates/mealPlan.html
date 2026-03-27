@@ -7,7 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0d0d0d; color: #e8e8e8; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+  body { background: #0d0d0d; color: #e8e8e8; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; }
+  #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  nav, main { position: relative; z-index: 1; }
 
   /* NAV */
   nav { display: flex; align-items: center; justify-content: space-between; padding: .9rem 2.5rem; border-bottom: 1px solid #1f2a22; position: sticky; top: 0; z-index: 100; background: rgba(10,14,11,.92); backdrop-filter: blur(12px); }
@@ -110,6 +112,7 @@
 </style>
 </head>
 <body>
+<canvas id="bg-canvas"></canvas>
 
 <nav>
   <div class="logo">
@@ -263,6 +266,46 @@ function switchTab(tabBtn, tabName) {
   tabBtn.classList.add('active');
   panel.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
 }
+</script>
+<script>
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function random(min, max) { return Math.random() * (max - min) + min; }
+  function createParticle() {
+    return { x: random(0,W), y: random(0,H), r: random(1,3.5), speedX: random(-0.3,0.3), speedY: random(-0.5,-0.1), alpha: random(0.1,0.5), color: Math.random()>.5?'0,201,122':'29,185,122' };
+  }
+  function initParticles() { particles=[]; const count=Math.floor((W*H)/10000); for(let i=0;i<count;i++) particles.push(createParticle()); }
+  const orbs = [
+    { x:0.15, y:0.2,  r:280, color:'0,201,122',  alpha:0.04, dx:0.0002,   dy:0.00015  },
+    { x:0.8,  y:0.6,  r:220, color:'167,139,250', alpha:0.04, dx:-0.00015, dy:0.0002   },
+    { x:0.5,  y:0.9,  r:180, color:'96,165,250',  alpha:0.03, dx:0.0001,   dy:-0.00012 },
+  ];
+  let t = 0;
+  function drawOrbs() {
+    orbs.forEach(o => {
+      o.x += Math.sin(t * o.dx * 1000) * 0.0003;
+      o.y += Math.cos(t * o.dy * 1000) * 0.0003;
+      const grd = ctx.createRadialGradient(o.x*W, o.y*H, 0, o.x*W, o.y*H, o.r);
+      grd.addColorStop(0, `rgba(${o.color},${o.alpha})`);
+      grd.addColorStop(1, `rgba(${o.color},0)`);
+      ctx.beginPath(); ctx.arc(o.x*W, o.y*H, o.r, 0, Math.PI*2);
+      ctx.fillStyle = grd; ctx.fill();
+    });
+  }
+  function animate(ts) {
+    t = ts; ctx.clearRect(0, 0, W, H); drawOrbs();
+    particles.forEach((p, i) => {
+      p.x += p.speedX; p.y += p.speedY;
+      if (p.y < -10) particles[i] = { ...createParticle(), y: H + 5 };
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${p.color},${p.alpha})`; ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+  resize(); initParticles(); requestAnimationFrame(animate);
+  window.addEventListener('resize', () => { resize(); initParticles(); });
 </script>
 </body>
 </html>

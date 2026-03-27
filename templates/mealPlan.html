@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{{ d.app_name }} – Meal Plan</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0d0d; color: #e8e8e8; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  /* NAV */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 48px; border-bottom: 1px solid #1f1f1f; background: #0d0d0d; position: sticky; top: 0; z-index: 10; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon { width: 36px; height: 36px; background: #00c97a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: #0d0d0d; }
+  .brand-text { font-weight: 800; font-size: 16px; letter-spacing: 1px; }
+  .brand-sub { font-size: 10px; color: #666; letter-spacing: 0.5px; }
+  .nav-links { display: flex; gap: 8px; }
+  .nav-links a { text-decoration: none; color: #999; font-size: 14px; padding: 7px 16px; border-radius: 20px; transition: all .2s; }
+  .nav-links a:hover { color: #fff; }
+  .nav-links a.active { background: #00c97a; color: #0d0d0d; font-weight: 600; }
+
+  /* MAIN */
+  main { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+  .plan-badge { display: inline-flex; align-items: center; gap: 6px; background: #00c97a22; border: 1px solid #00c97a44; color: #00c97a; font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+  h1 { font-size: 32px; font-weight: 800; margin-bottom: 6px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
+  .subtitle b { color: #00c97a; }
+
+  /* DAY TABS */
+  .tabs { display: flex; gap: 8px; background: #161616; border: 1px solid #222; border-radius: 12px; padding: 8px; margin-bottom: 24px; }
+  .tab { flex: 1; text-align: center; padding: 10px 14px; border-radius: 8px; cursor: pointer; border: none; background: transparent; color: #666; font-size: 12px; font-family: inherit; transition: all .2s; }
+  .tab .tab-label { font-size: 10px; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .tab .tab-name { font-size: 13px; font-weight: 700; color: inherit; }
+  .tab.active { background: #00c97a; color: #0d0d0d; }
+  .tab.active .tab-name { color: #0d0d0d; }
+
+  /* DAILY TOTALS */
+  .totals-card { background: #0e1f18; border: 1px solid #00c97a33; border-radius: 14px; padding: 22px 28px; margin-bottom: 20px; }
+  .totals-title { font-size: 14px; font-weight: 700; color: #00c97a; margin-bottom: 16px; }
+  .totals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .total-item .t-label { font-size: 11px; color: #555; margin-bottom: 4px; }
+  .total-item .t-val { font-size: 28px; font-weight: 800; line-height: 1; }
+  .t-val.cal { color: #e8e8e8; }
+  .t-val.pro { color: #60a5fa; }
+  .t-val.carb { color: #f97316; }
+  .t-val.fat { color: #a78bfa; }
+  .t-val span { font-size: 14px; font-weight: 400; color: #888; }
+
+  /* MEAL CARD WRAPPER */
+  .meal-card-wrapper { border: 1px solid #222; border-radius: 14px; overflow: hidden; margin-bottom: 14px; transition: border-color .2s; background: #161616; }
+  .meal-card-wrapper:hover { border-color: #333; }
+  .meal-card-wrapper.open { border-color: #00c97a44; }
+
+  /* MEAL CARD */
+  .meal-card { display: flex; }
+  .meal-img { width: 120px; min-width: 120px; height: 110px; object-fit: cover; display: block; }
+  .meal-body { padding: 14px 18px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .meal-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .meal-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 4px; }
+  .badge-breakfast { background: #00c97a22; color: #00c97a; }
+  .badge-lunch { background: #60a5fa22; color: #60a5fa; }
+  .badge-snack { background: #f9731622; color: #f97316; }
+  .badge-dinner { background: #a78bfa22; color: #a78bfa; }
+  .meal-time { font-size: 11px; color: #555; display: flex; align-items: center; gap: 4px; }
+  .meal-name { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+  .meal-macros { display: flex; gap: 24px; margin-bottom: 10px; }
+  .macro-item .m-label { font-size: 10px; color: #555; margin-bottom: 2px; }
+  .macro-item .m-val { font-size: 15px; font-weight: 700; }
+  .m-val.cal { color: #e8e8e8; }
+  .m-val.pro { color: #60a5fa; }
+  .m-val.carb { color: #f97316; }
+  .m-val.fat { color: #a78bfa; }
+
+  .view-recipe-btn { font-size: 12px; color: #00c97a; background: none; border: none; font-family: inherit; font-weight: 600; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 4px; transition: opacity .2s; }
+  .view-recipe-btn:hover { opacity: 0.8; }
+  .view-recipe-btn .arrow { transition: transform .25s; display: inline-block; }
+  .view-recipe-btn.open .arrow { transform: rotate(180deg); }
+
+  /* RECIPE PANEL */
+  .recipe-panel { display: none; border-top: 1px solid #222; padding: 20px 18px 20px; }
+  .recipe-panel.open { display: block; }
+
+  .recipe-tabs { display: flex; gap: 10px; margin-bottom: 16px; }
+  .rtab { background: none; border: 1px solid #333; color: #888; font-size: 13px; font-weight: 600; font-family: inherit; padding: 6px 18px; border-radius: 20px; cursor: pointer; transition: all .2s; }
+  .rtab.active { background: #00c97a; border-color: #00c97a; color: #0d0d0d; }
+
+  .recipe-content { display: none; }
+  .recipe-content.active { display: block; }
+
+  .ingredient-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .ingredient-list li { font-size: 13px; color: #ccc; display: flex; align-items: center; gap: 8px; }
+  .ingredient-list li::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #00c97a; flex-shrink: 0; }
+
+  .instruction-list { list-style: none; display: flex; flex-direction: column; gap: 10px; counter-reset: step; }
+  .instruction-list li { font-size: 13px; color: #ccc; display: flex; align-items: flex-start; gap: 12px; counter-increment: step; }
+  .instruction-list li::before { content: counter(step); min-width: 22px; height: 22px; border-radius: 50%; background: #00c97a22; border: 1px solid #00c97a55; color: #00c97a; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+  /* DAY SECTIONS */
+  .day-section { display: none; }
+  .day-section.active { display: block; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">
+    <div class="brand-icon">FF</div>
+    <div>
+      <div class="brand-text">{{ d.app_name }}</div>
+      <div class="brand-sub">{{ d.tagline }}</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    {% for item in d.nav %}
+      <a href="#" class="{{ 'active' if item == d.active_nav else '' }}">{{ item }}</a>
+    {% endfor %}
+  </div>
+</nav>
+
+<main>
+  <div class="plan-badge">&#10003; YOUR PLAN</div>
+  <h1>7-Day Meal Plan</h1>
+  <p class="subtitle">Personalized by <b>Gemini AI</b> for your {{ d.plan_goal }} goals</p>
+
+  <!-- Day Tabs -->
+  <div class="tabs">
+    {% for day in d.days %}
+    <button class="tab {{ 'active' if loop.first else '' }}" onclick="switchDay({{ loop.index0 }})">
+      <div class="tab-label">{{ day.label }}</div>
+      <div class="tab-name">{{ day.name }}</div>
+    </button>
+    {% endfor %}
+  </div>
+
+  <!-- Day Sections -->
+  {% for day in d.days %}
+  <div class="day-section {{ 'active' if loop.first else '' }}" id="day-{{ loop.index0 }}">
+
+    <!-- Daily Totals -->
+    <div class="totals-card">
+      <div class="totals-title">Daily Totals &ndash; {{ day.name }}</div>
+      <div class="totals-grid">
+        <div class="total-item">
+          <div class="t-label">Total Calories</div>
+          <div class="t-val cal">{{ day.totals.calories }}</div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Protein</div>
+          <div class="t-val pro">{{ day.totals.protein }}<span>g</span></div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Carbs</div>
+          <div class="t-val carb">{{ day.totals.carbs }}<span>g</span></div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Fat</div>
+          <div class="t-val fat">{{ day.totals.fat }}<span>g</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meals -->
+    {% for meal in day.meals %}
+    {% set panel_id = "panel-" ~ loop.index0 ~ "-" ~ loop.index0 %}
+    <div class="meal-card-wrapper" id="wrapper-{{ loop.depth0 }}-{{ loop.index0 }}">
+      <div class="meal-card">
+        <img class="meal-img" src="{{ meal.image }}" alt="{{ meal.name }}" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-{{ meal.type | lower }}">{{ meal.type | upper }}</span>
+              <span class="meal-time">&#9201; {{ meal.time }} min</span>
+            </div>
+            <div class="meal-name">{{ meal.name }}</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">{{ meal.calories }}</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">{{ meal.protein }}g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">{{ meal.carbs }}g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">{{ meal.fat }}g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            {% for item in meal.ingredients %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            {% for step in meal.instructions %}
+            <li>{{ step }}</li>
+            {% endfor %}
+          </ol>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+  </div>
+  {% endfor %}
+</main>
+
+<script>
+function switchDay(index) {
+  document.querySelectorAll('.day-section').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+}
+
+function toggleRecipe(btn) {
+  const wrapper = btn.closest('.meal-card-wrapper');
+  const panel = wrapper.querySelector('.recipe-panel');
+  const isOpen = panel.classList.contains('open');
+
+  panel.classList.toggle('open', !isOpen);
+  wrapper.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  btn.querySelector('.btn-label').textContent = isOpen ? 'View Recipe' : 'Hide Details';
+}
+
+function switchTab(tabBtn, tabName) {
+  const panel = tabBtn.closest('.recipe-panel');
+  panel.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+  panel.querySelectorAll('.recipe-content').forEach(c => c.classList.remove('active'));
+  tabBtn.classList.add('active');
+  panel.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+}
+</script>
+</body>
+</html>

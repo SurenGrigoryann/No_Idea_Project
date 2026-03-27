@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FUELFORGE – Goals</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d0d0d;
+    color: #e8e8e8;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 48px;
+    border-bottom: 1px solid #1f1f1f;
+    background: #0d0d0d;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 36px; height: 36px; background: #00c97a;
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 14px; color: #0d0d0d;
+  }
+  .brand-text { font-weight: 800; font-size: 16px; letter-spacing: 1px; }
+  .brand-sub { font-size: 10px; color: #666; letter-spacing: 0.5px; }
+  .nav-links { display: flex; gap: 8px; }
+  .nav-links a {
+    text-decoration: none; color: #999; font-size: 14px;
+    padding: 7px 16px; border-radius: 20px; transition: all .2s;
+  }
+  .nav-links a:hover { color: #fff; }
+  .nav-links a.active {
+    background: #00c97a; color: #0d0d0d; font-weight: 600;
+  }
+
+  /* ── MAIN ── */
+  main { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 36px; }
+
+  /* ── PROFILE GRID ── */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .card {
+    background: #161616;
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 22px 20px 18px;
+  }
+  .card.highlight { border-color: #00c97a44; background: #0e1f18; }
+  .card-label { font-size: 12px; color: #666; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .card-label .icon { font-size: 14px; }
+  .card-value { font-size: 36px; font-weight: 800; line-height: 1; }
+  .card-value span { font-size: 16px; font-weight: 400; color: #888; margin-left: 2px; }
+  .green { color: #00c97a; }
+  .purple { color: #a78bfa; }
+  .blue { color: #60a5fa; }
+  .gold { color: #facc15; }
+
+  /* ── SECTION ── */
+  .section {
+    background: #161616; border: 1px solid #222;
+    border-radius: 14px; padding: 26px 28px; margin-bottom: 20px;
+  }
+  .section-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .section-sub { font-size: 12px; color: #555; margin-bottom: 20px; }
+
+  /* ── GOAL CARDS ── */
+  .goals-list { display: flex; flex-direction: column; gap: 16px; }
+  .goal-card {
+    background: #111; border: 1px solid #222;
+    border-radius: 12px; padding: 20px 22px;
+    position: relative;
+  }
+  .goal-card.active-goal { border-color: #00c97a44; background: #0b1a13; }
+  .goal-card.completed-goal { border-color: #a78bfa33; background: #110e1a; }
+  .goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .goal-title-row { display: flex; align-items: center; gap: 10px; }
+  .goal-title { font-size: 16px; font-weight: 700; }
+  .status-badge {
+    font-size: 11px; font-weight: 700; padding: 2px 10px;
+    border-radius: 20px; letter-spacing: 0.5px;
+  }
+  .status-badge.active { background: #00c97a22; color: #00c97a; }
+  .status-badge.completed { background: #a78bfa22; color: #a78bfa; }
+  .goal-deadline { font-size: 12px; color: #555; }
+  .goal-weights {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px; margin-bottom: 14px;
+  }
+  .gw-item { text-align: center; }
+  .gw-label { font-size: 11px; color: #555; margin-bottom: 4px; }
+  .gw-val { font-size: 22px; font-weight: 800; }
+  .gw-unit { font-size: 13px; color: #888; margin-left: 2px; font-weight: 400; }
+  .progress-bar-bg {
+    background: #252525; border-radius: 8px; height: 10px; overflow: hidden; margin-bottom: 8px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00c97a, #00ff9d);
+    border-radius: 8px;
+  }
+  .progress-bar-fill.purple-fill {
+    background: linear-gradient(90deg, #a78bfa, #c4b5fd);
+  }
+  .progress-info { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
+
+  /* ── NEW GOAL FORM ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 12px; color: #888; font-weight: 500; }
+  input[type="text"],
+  input[type="number"],
+  input[type="date"] {
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    color: #e8e8e8;
+    font-size: 15px;
+    font-family: inherit;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color .2s;
+    width: 100%;
+  }
+  input:focus { border-color: #00c97a55; }
+  .btn-create {
+    width: 100%;
+    background: #00c97a;
+    color: #0d0d0d;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .2s, transform .1s;
+    letter-spacing: 0.5px;
+  }
+  .btn-create:hover { background: #00e58a; transform: translateY(-1px); }
+  .btn-create:active { transform: translateY(0); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0 20px;
+  }
+  .divider-line { flex: 1; height: 1px; background: #222; }
+  .divider-text { font-size: 12px; color: #444; }
+
+  /* ── PROFILE EDIT NOTE ── */
+  .profile-note {
+    font-size: 12px; color: #444; margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">
+    <div class="brand-icon">FF</div>
+    <div>
+      <div class="brand-text">FUELFORGE</div>
+      <div class="brand-sub">AI Meal Planner</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#">Meal Plan</a>
+    <a href="#">Progress</a>
+    <a href="#" class="active">Goals</a>
+    <a href="#">Grocery</a>
+    <a href="#">Scanner</a>
+  </div>
+</nav>
+
+<main>
+  <h1>Your Goals</h1>
+  <p class="subtitle">Set targets, track progress, and stay on course</p>
+
+  <!-- Profile Stats -->
+  <div class="profile-grid">
+    <div class="card highlight">
+      <div class="card-label"><span class="icon">&#9878;</span> Weight</div>
+      <div class="card-value green">{{ d.current_weight }}<span>kg</span></div>
+    </div>
+    <div class="card">
+      <div class="card-label"><span class="icon">&#8597;</span> Height</div>
+      <div class="card-value blue">{{ d.height }}<span>cm</span></div>
+    </div>
+    <div class="card">
+      <div class="card-label"><span class="icon">&#128197;</span> Age</div>
+      <div class="card-value purple">{{ d.age }}<span>yrs</span></div>
+    </div>
+    <div class="card">
+      <div class="card-label"><span class="icon">&#128176;</span> Budget</div>
+      <div class="card-value gold">${{ d.budget }}<span>/wk</span></div>
+    </div>
+  </div>
+
+  <!-- My Goals -->
+  <div class="section">
+    <div class="section-title">My Goals</div>
+    <div class="section-sub">All your weight targets in one place</div>
+    <div class="goals-list">
+      {% for g in d.goals %}
+      {% set diff = g.start_weight - g.goal_weight %}
+      {% set done = g.start_weight - g.current_weight %}
+      {% set pct = ((done / diff) * 100) | int if diff > 0 else 100 %}
+      {% set pct = [pct, 0] | max %}
+      {% set pct = [pct, 100] | min %}
+      <div class="goal-card {{ g.status }}-goal">
+        <div class="goal-header">
+          <div class="goal-title-row">
+            <div class="goal-title">{{ g.title }}</div>
+            <div class="status-badge {{ g.status }}">{{ g.status | upper }}</div>
+          </div>
+          <div class="goal-deadline">Deadline: {{ g.deadline }}</div>
+        </div>
+        <div class="goal-weights">
+          <div class="gw-item">
+            <div class="gw-label">Start Weight</div>
+            <div class="gw-val">{{ g.start_weight }}<span class="gw-unit">kg</span></div>
+          </div>
+          <div class="gw-item">
+            <div class="gw-label">Current Weight</div>
+            <div class="gw-val green">{{ g.current_weight }}<span class="gw-unit">kg</span></div>
+          </div>
+          <div class="gw-item">
+            <div class="gw-label">Goal Weight</div>
+            <div class="gw-val purple">{{ g.goal_weight }}<span class="gw-unit">kg</span></div>
+          </div>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill {% if g.status == 'completed' %}purple-fill{% endif %}" style="width: {{ pct }}%"></div>
+        </div>
+        <div class="progress-info">
+          <span>{{ pct }}% complete</span>
+          <span>Started {{ g.created }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Create New Goal -->
+  <div class="section">
+    <div class="section-title">Create New Goal</div>
+    <div class="section-sub">Enter your current stats and set your target weight</div>
+
+    <form method="POST" action="/">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Goal Title</label>
+          <input type="text" name="title" placeholder="e.g. Lose Weight, Bulk Up..." required/>
+        </div>
+        <div class="form-group">
+          <label>Current Weight (kg)</label>
+          <input type="number" name="current_weight" step="0.1" min="30" max="300"
+                 value="{{ d.current_weight }}" placeholder="85" required/>
+        </div>
+        <div class="form-group">
+          <label>Goal Weight (kg)</label>
+          <input type="number" name="goal_weight" step="0.1" min="30" max="300"
+                 placeholder="75" required/>
+        </div>
+        <div class="form-group">
+          <label>Height (cm)</label>
+          <input type="number" name="height" min="100" max="250"
+                 value="{{ d.height }}" placeholder="178" required/>
+        </div>
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" name="age" min="10" max="120"
+                 value="{{ d.age }}" placeholder="28" required/>
+        </div>
+        <div class="form-group">
+          <label>Weekly Budget ($)</label>
+          <input type="number" name="budget" min="0"
+                 value="{{ d.budget }}" placeholder="150" required/>
+        </div>
+        <div class="form-group">
+          <label>Deadline</label>
+          <input type="date" name="deadline"/>
+        </div>
+      </div>
+      <button type="submit" class="btn-create">+ Create Goal</button>
+      <p class="profile-note">Submitting will update your profile stats above.</p>
+    </form>
+  </div>
+
+</main>
+
+</body>
+</html>

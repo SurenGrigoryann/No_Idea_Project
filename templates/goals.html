@@ -273,7 +273,8 @@
     <div class="section-title">Create New Goal</div>
     <div class="section-sub">Enter your current stats and set your target weight</div>
 
-    <form method="POST" action="/">
+    <form method="POST" action="{{ url_for('goals.goals') }}">
+      <input type="hidden" name="action" value="add_goal"/>
       <div class="form-grid">
         <div class="form-group full">
           <label>Goal Title</label>

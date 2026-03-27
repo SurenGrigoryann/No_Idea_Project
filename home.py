@@ -1,29 +1,28 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, redirect, url_for
 from database import get_db
- 
+
 home_bp = Blueprint('home', __name__)
- 
- 
+
+
 @home_bp.route('/')
-@home_bp.route('/home')
 def home():
-    uid = session.get("uid")
+    if "uid" not in session:
+        return redirect(url_for("login"))
+
+    uid  = session["uid"]
     conn = get_db()
- 
-    # Load user profile for stats
+
     user = conn.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone()
- 
-    # Active goal for goal label
+
     goal = conn.execute(
         "SELECT * FROM goals WHERE user_id=? AND status='active' ORDER BY id DESC LIMIT 1",
         (uid,)
     ).fetchone()
- 
-    # Today's meals — pull from the first day of the user's meal plan
+
     first_day = conn.execute(
         "SELECT * FROM meal_plan_days WHERE user_id=? ORDER BY label LIMIT 1", (uid,)
     ).fetchone()
- 
+
     meals = []
     if first_day:
         meal_rows = conn.execute(
@@ -40,8 +39,7 @@ def home():
                 "fat":      f"{int(m['fat'])}g",
             })
     conn.close()
- 
-    # Fallback meals if no plan seeded yet
+
     if not meals:
         meals = [
             {
@@ -65,15 +63,15 @@ def home():
                 "calories": 750, "protein": "52g", "carbs": "68g", "fat": "28g"
             }
         ]
- 
+
     goal_label   = goal["title"] if goal else "No Active Goal"
     daily_target = f"{int(sum(m['calories'] if isinstance(m['calories'], (int, float)) else 0 for m in meals))} cal"
     budget       = user["budget"] if user else 0
- 
+
     stats = {
         "goal":          goal_label,
         "daily_target":  daily_target,
         "weekly_budget": f"${int(budget)}",
     }
- 
+
     return render_template('home.html', stats=stats, meals=meals)

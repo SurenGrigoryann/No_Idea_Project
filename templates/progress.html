@@ -201,18 +201,18 @@
   <div class="cards-row">
     <div class="card">
       <div class="card-label">Starting Weight <span>&#9662;</span></div>
-      <div class="card-value">92<span>kg</span></div>
-      <div class="card-meta">February 14, 2026</div>
+      <div class="card-value">{{ d.starting_weight }}<span>kg</span></div>
+      <div class="card-meta">{{ d.starting_date }}</div>
     </div>
     <div class="card highlight">
-      <div class="card-label">Current Weight <span class="badge-down">&#9662; -7kg</span></div>
-      <div class="card-value green">85<span>kg</span></div>
+      <div class="card-label">Current Weight <span class="badge-down">&#9662; {{ d.weight_change }}kg</span></div>
+      <div class="card-value green">{{ d.current_weight }}<span>kg</span></div>
       <div class="card-meta">Last updated today</div>
     </div>
     <div class="card">
       <div class="card-label">Goal Weight <span class="dot-icon">&#127919;</span></div>
-      <div class="card-value purple">80<span>kg</span></div>
-      <div class="card-meta">5.0kg to go</div>
+      <div class="card-value purple">{{ d.goal_weight }}<span>kg</span></div>
+      <div class="card-meta">{{ d.kg_to_go }}kg to go</div>
     </div>
   </div>
 
@@ -221,30 +221,30 @@
     <div class="section-header">
       <div>
         <div class="section-title">Overall Progress</div>
-        <div class="section-sub">7kg lost of 12kg goal</div>
+        <div class="section-sub">{{ d.kg_lost }}kg lost of {{ d.goal_total_kg }}kg goal</div>
       </div>
       <div style="text-align:right">
-        <div class="pct">20%</div>
+        <div class="pct">{{ d.progress_pct }}%</div>
         <div class="pct-label">Complete</div>
       </div>
     </div>
     <div class="progress-bar-bg">
-      <div class="progress-bar-fill" style="width:20%"></div>
+      <div class="progress-bar-fill" style="width:{{ d.progress_pct }}%"></div>
     </div>
     <div class="stats-row">
       <div class="stat-item">
         <div class="stat-icon green-bg">&#11015;</div>
-        <div class="stat-val green">7kg</div>
+        <div class="stat-val green">{{ d.kg_lost }}kg</div>
         <div class="stat-lbl">Lost</div>
       </div>
       <div class="stat-item">
         <div class="stat-icon purple-bg">&#127919;</div>
-        <div class="stat-val purple">5.0kg</div>
+        <div class="stat-val purple">{{ d.kg_remaining }}kg</div>
         <div class="stat-lbl">Remaining</div>
       </div>
       <div class="stat-item">
         <div class="stat-icon blue-bg">&#128197;</div>
-        <div class="stat-val blue">40</div>
+        <div class="stat-val blue">{{ d.days_on_journey }}</div>
         <div class="stat-lbl">Days</div>
       </div>
     </div>
@@ -257,7 +257,7 @@
         <div class="streak-icon orange">&#128293;</div>
         <div class="streak-label">Current Streak</div>
       </div>
-      <div class="streak-value orange">12<span class="streak-unit">days</span></div>
+      <div class="streak-value orange">{{ d.current_streak }}<span class="streak-unit">days</span></div>
       <div class="streak-note">Keep it up! You're on fire &#128293;</div>
     </div>
     <div class="streak-card">
@@ -265,7 +265,7 @@
         <div class="streak-icon gold">&#127942;</div>
         <div class="streak-label">Longest Streak</div>
       </div>
-      <div class="streak-value gold">15<span class="streak-unit">days</span></div>
+      <div class="streak-value gold">{{ d.longest_streak }}<span class="streak-unit">days</span></div>
       <div class="streak-note">Personal record</div>
     </div>
     <div class="streak-card">
@@ -273,8 +273,8 @@
         <div class="streak-icon blue">&#128197;</div>
         <div class="streak-label">Total Active Days</div>
       </div>
-      <div class="streak-value blue">38<span class="streak-unit">days</span></div>
-      <div class="streak-note">95% consistency</div>
+      <div class="streak-value blue">{{ d.total_active_days }}<span class="streak-unit">days</span></div>
+      <div class="streak-note">{{ d.consistency_pct }}% consistency</div>
     </div>
   </div>
 
@@ -295,22 +295,22 @@
   <div class="crushing-card">
     <div class="crushing-icon">&#128200;</div>
     <div class="crushing-title">You're Crushing It!</div>
-    <div class="crushing-sub">You've lost <b>7kg</b> in 40 days</div>
+    <div class="crushing-sub">You've lost <b>{{ d.kg_lost }}kg</b> in {{ d.days_on_journey }} days</div>
     <div class="crushing-stats">
       <div class="c-stat">
-        <div class="c-stat-val">0.17</div>
+        <div class="c-stat-val">{{ d.kg_per_day }}</div>
         <div class="c-stat-lbl">kg/day avg</div>
       </div>
       <div class="c-stat">
-        <div class="c-stat-val">3.5</div>
+        <div class="c-stat-val">{{ d.weeks_in }}</div>
         <div class="c-stat-lbl">weeks in</div>
       </div>
       <div class="c-stat">
-        <div class="c-stat-val">29</div>
+        <div class="c-stat-val">{{ d.days_to_goal }}</div>
         <div class="c-stat-lbl">days to goal</div>
       </div>
       <div class="c-stat">
-        <div class="c-stat-val green">20%</div>
+        <div class="c-stat-val green">{{ d.progress_pct }}%</div>
         <div class="c-stat-lbl">complete</div>
       </div>
     </div>
@@ -318,9 +318,9 @@
 </main>
 
 <script>
-const labels = ["Feb 14", "Feb 21", "Feb 28", "Mar 7", "Mar 14", "Mar 21", "Mar 26"];
-const weights = [92, 91, 90, 88.5, 87, 86, 85];
-const goal = 80;
+const labels  = {{ d.chart_labels | tojson }};
+const weights = {{ d.chart_weights | tojson }};
+const goal    = {{ d.goal_line }};
 
 const ctx = document.getElementById('weightChart').getContext('2d');
 new Chart(ctx, {
@@ -362,8 +362,8 @@ new Chart(ctx, {
       y: {
         grid: { color: '#1e1e1e' },
         ticks: { color: '#555', font: { size: 11 } },
-        min: Math.min(...weights, goal) - 2,
-        max: Math.max(...weights) + 2,
+        min: weights.length ? Math.min(...weights, goal) - 2 : goal - 10,
+        max: weights.length ? Math.max(...weights) + 2    : goal + 10,
       }
     }
   }

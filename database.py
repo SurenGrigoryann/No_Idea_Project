@@ -21,6 +21,7 @@ def get_db():
 
 
 def init_db():
+    first_run = not os.path.exists(DB_PATH)
     conn = get_db()
     c = conn.cursor()
 
@@ -117,7 +118,8 @@ def init_db():
 
     conn.commit()
     conn.close()
-    print("✓ fuelforge.db created and all tables ready.")
+    if first_run:
+        print("✓ fuelforge.db created and all tables ready.")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FuelForge — AI Meal Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --bg:         #0a0e0b;
+      --surface:    #111714;
+      --surface2:   #161d18;
+      --border:     #1f2a22;
+      --green:      #1db97a;
+      --green-dim:  #14894f;
+      --green-bg:   rgba(29,185,122,.08);
+      --green-hero: rgba(29,185,122,.12);
+      --text:       #e8eeea;
+      --muted:      #5a7060;
+      --purple:     #6c63ff;
+      --gold:       #f0a500;
+      --red:        #e05c5c;
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+    }
+ 
+    /* ── NAV ─────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .9rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,14,11,.92);
+      backdrop-filter: blur(12px);
+    }
+ 
+    .logo {
+      display: flex; align-items: center; gap: .75rem;
+    }
+ 
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: var(--green);
+      border-radius: 9px;
+      display: grid; place-items: center;
+      font-size: 1.1rem;
+    }
+ 
+    .logo-text { line-height: 1; }
+    .logo-text strong {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.25rem;
+      letter-spacing: .1em;
+      color: var(--text);
+    }
+    .logo-text span {
+      font-size: .7rem;
+      color: var(--muted);
+      font-weight: 300;
+    }
+ 
+    .nav-links {
+      display: flex; align-items: center; gap: .3rem;
+      list-style: none;
+    }
+ 
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 500;
+      padding: .5rem .9rem;
+      border-radius: 8px;
+      display: flex; align-items: center; gap: .4rem;
+      transition: color .2s, background .2s;
+    }
+ 
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+ 
+    .nav-links .active {
+      background: var(--green);
+      color: #0a0e0b !important;
+      font-weight: 600;
+    }
+ 
+    /* ── MAIN CONTENT ────────────────────────── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 2rem 4rem;
+    }
+ 
+    /* ── HERO ────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0d2118 0%, #0f2d1c 50%, #091a10 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp .5s ease both;
+    }
+ 
+    .hero::before {
+      content: '';
+      position: absolute;
+      right: -60px; top: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(29,185,122,.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+ 
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(29,185,122,.15);
+      border: 1px solid rgba(29,185,122,.3);
+      color: var(--green);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      padding: .35rem .8rem;
+      border-radius: 999px;
+      margin-bottom: 1.2rem;
+    }
+ 
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      line-height: 1;
+      letter-spacing: .04em;
+      color: var(--text);
+    }
+ 
+    .hero h1 span { color: var(--green); }
+ 
+    .hero p {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.7;
+      max-width: 600px;
+    }
+ 
+    /* ── STAT CARDS ──────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      animation: fadeUp .5s .1s ease both;
+    }
+ 
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: border-color .2s;
+    }
+ 
+    .stat-card:hover { border-color: var(--green-dim); }
+ 
+    .stat-icon {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+ 
+    .stat-icon.blue   { background: rgba(108,99,255,.15); }
+    .stat-icon.purple { background: rgba(160,90,255,.15); }
+    .stat-icon.green  { background: rgba(29,185,122,.15); }
+ 
+    .stat-label {
+      font-size: .75rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: .2rem;
+    }
+ 
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+ 
+    /* ── MEALS SECTION ───────────────────────── */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      animation: fadeUp .5s .15s ease both;
+    }
+ 
+    .section-header h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: .06em;
+      color: var(--text);
+    }
+ 
+    .view-all {
+      display: flex; align-items: center; gap: .3rem;
+      text-decoration: none;
+      color: var(--green);
+      font-size: .85rem;
+      font-weight: 600;
+      border: 1px solid rgba(29,185,122,.3);
+      padding: .4rem .9rem;
+      border-radius: 8px;
+      transition: background .2s;
+    }
+ 
+    .view-all:hover { background: var(--green-bg); }
+ 
+    .meals-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+      animation: fadeUp .5s .2s ease both;
+    }
+ 
+    .meal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      cursor: pointer;
+    }
+ 
+    .meal-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--green-dim);
+      box-shadow: 0 12px 32px rgba(0,0,0,.4);
+    }
+ 
+    .meal-img-wrap {
+      position: relative;
+      height: 170px;
+      overflow: hidden;
+    }
+ 
+    .meal-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .4s ease;
+    }
+ 
+    .meal-card:hover .meal-img-wrap img { transform: scale(1.05); }
+ 
+    .meal-badge {
+      position: absolute;
+      top: .8rem; left: .8rem;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      padding: .28rem .7rem;
+      border-radius: 999px;
+      background: rgba(10,14,11,.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+ 
+    .meal-badge.breakfast { color: #f0a500; border-color: rgba(240,165,0,.3); }
+    .meal-badge.lunch     { color: var(--green); border-color: rgba(29,185,122,.3); }
+    .meal-badge.snack     { color: #c084fc; border-color: rgba(192,132,252,.3); }
+    .meal-badge.dinner    { color: #fb923c; border-color: rgba(251,146,60,.3); }
+ 
+    .meal-body {
+      padding: 1rem 1.2rem 1.3rem;
+    }
+ 
+    .meal-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: .9rem;
+    }
+ 
+    .macros {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .4rem;
+    }
+ 
+    .macro {
+      text-align: center;
+    }
+ 
+    .macro-label {
+      font-size: .68rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: .2rem;
+    }
+ 
+    .macro-val {
+      font-size: .92rem;
+      font-weight: 700;
+    }
+ 
+    .macro-val.cal     { color: var(--green); }
+    .macro-val.protein { color: #60a5fa; }
+    .macro-val.carbs   { color: #c084fc; }
+    .macro-val.fat     { color: #fb923c; }
+ 
+    /* ── BOTTOM CARDS ────────────────────────── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      animation: fadeUp .5s .25s ease both;
+    }
+ 
+    .action-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      text-decoration: none;
+    }
+ 
+    .action-card:hover {
+      border-color: var(--green-dim);
+      background: var(--surface2);
+    }
+ 
+    .action-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .3rem;
+    }
+ 
+    .action-card p {
+      font-size: .82rem;
+      color: var(--muted);
+    }
+ 
+    .arrow {
+      width: 36px; height: 36px;
+      background: var(--green-bg);
+      border: 1px solid rgba(29,185,122,.25);
+      border-radius: 8px;
+      display: grid; place-items: center;
+      color: var(--green);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+ 
+    /* ── ANIMATIONS ──────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(16px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+ 
+    /* ── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 700px) {
+      .stats-grid, .meals-grid, .bottom-grid { grid-template-columns: 1fr; }
+      nav { padding: .8rem 1.2rem; }
+      .nav-links { display: none; }
+      main { padding: 1.2rem 1rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+ 
+<!-- ── NAVBAR ── -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">🔥</div>
+    <div class="logo-text">
+      <strong>FUELFORGE</strong>
+      <span>AI Meal Planner</span>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('home.home') }}" class="active">🏠 Home</a></li>
+    <li><a href="#">📋 Meal Plan</a></li>
+    <li><a href="#">📈 Progress</a></li>
+    <li><a href="#">🛒 Grocery</a></li>
+    <li><a href="#">📷 Scanner</a></li>
+  </ul>
+</nav>
+ 
+<!-- ── MAIN ── -->
+<main>
+ 
+  <!-- HERO -->
+  <section class="hero">
+    <div class="ai-badge">⚡ AI-POWERED</div>
+    <h1>Your Personalized<br><span>Meal Strategy</span></h1>
+    <p>
+      Gemini AI creates custom 7-day meal plans based on your stats, goals, and budget.<br>
+      Track macros, scan foods, and get your weekly grocery list instantly.
+    </p>
+  </section>
+ 
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">📊</div>
+      <div>
+        <div class="stat-label">Current Goal</div>
+        <div class="stat-value">{{ stats.goal }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">⚡</div>
+      <div>
+        <div class="stat-label">Daily Target</div>
+        <div class="stat-value">{{ stats.daily_target }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">💵</div>
+      <div>
+        <div class="stat-label">Weekly Budget</div>
+        <div class="stat-value">{{ stats.weekly_budget }}</div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- TODAY'S MEALS -->
+  <div class="section-header">
+    <h2>Today's Meals</h2>
+    <a href="#" class="view-all">View Full Plan →</a>
+  </div>
+ 
+  <div class="meals-grid">
+    {% for meal in meals %}
+    <div class="meal-card">
+      <div class="meal-img-wrap">
+        <img src="{{ meal.image }}" alt="{{ meal.name }}" loading="lazy"/>
+        <span class="meal-badge {{ meal.type | lower }}">{{ meal.type }}</span>
+      </div>
+      <div class="meal-body">
+        <div class="meal-name">{{ meal.name }}</div>
+        <div class="macros">
+          <div class="macro">
+            <div class="macro-label">Calories</div>
+            <div class="macro-val cal">{{ meal.calories }}</div>
+          </div>
+          <div class="macro">
+            <div class="macro-label">Protein</div>
+            <div class="macro-val protein">{{ meal.protein }}</div>
+          </div>
+          <div class="macro">
+            <div class="macro-label">Carbs</div>
+            <div class="macro-val carbs">{{ meal.carbs }}</div>
+          </div>
+          <div class="macro">
+            <div class="macro-label">Fat</div>
+            <div class="macro-val fat">{{ meal.fat }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+ 
+  <!-- BOTTOM ACTION CARDS -->
+  <div class="bottom-grid">
+    <a href="#" class="action-card">
+      <div>
+        <h3>Grocery List Ready</h3>
+        <p>All ingredients for this week's plan</p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+    <a href="#" class="action-card">
+      <div>
+        <h3>Scan Your Food</h3>
+        <p>Get instant nutrition info with AI</p>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+ 
+</main>
+ 
+</body>
+</html>

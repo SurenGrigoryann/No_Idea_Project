@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161920;
+      --border:    #272b36;
+      --text:      #e8eaf0;
+      --muted:     #6b7080;
+      --accent:    #c9a96e;
+      --accent-dim:#a07d48;
+      --error:     #e07070;
+      --success:   #6fcf97;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      padding: 1.5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(201,169,110,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 24px 60px rgba(0,0,0,.5);
+      animation: rise .5s ease both;
+    }
+
+    @keyframes rise {
+      from { opacity:0; transform: translateY(18px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: 2rem;
+    }
+
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: grid; place-items: center;
+      font-size: 1rem; font-weight: 700;
+      color: #0d0f14;
+    }
+
+    .brand-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      letter-spacing: .02em;
+      color: var(--text);
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.7rem;
+      font-weight: 400;
+      margin-bottom: .4rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: .875rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Flash messages */
+    .alert {
+      border-radius: 8px;
+      padding: .7rem 1rem;
+      font-size: .85rem;
+      margin-bottom: .6rem;
+    }
+    .alert-error {
+      background: rgba(224,112,112,.1);
+      border: 1px solid rgba(224,112,112,.35);
+      color: var(--error);
+    }
+    .alert-success {
+      background: rgba(111,207,151,.1);
+      border: 1px solid rgba(111,207,151,.35);
+      color: var(--success);
+    }
+    .alerts { margin-bottom: 1rem; }
+
+    .field { margin-bottom: 1.2rem; }
+
+    label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .45rem;
+    }
+
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: .95rem;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+
+    input::placeholder { color: var(--muted); }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(201,169,110,.12);
+    }
+
+    input.invalid {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(224,112,112,.1);
+    }
+
+    /* Password strength checklist */
+    .pw-rules {
+      margin-top: .6rem;
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+    }
+
+    .pw-rule {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .78rem;
+      color: var(--muted);
+      transition: color .2s;
+    }
+
+    .pw-rule .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+      transition: background .2s;
+    }
+
+    .pw-rule.pass       { color: var(--success); }
+    .pw-rule.pass .dot  { background: var(--success); }
+
+    /* Two-column grid for optional profile fields */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 1rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.4rem 0 1.2rem;
+    }
+
+    .section-label {
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: .6rem;
+      padding: .82rem;
+      background: var(--accent);
+      color: #0d0f14;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: .02em;
+      transition: background .2s, transform .1s;
+    }
+
+    .btn:hover  { background: #d6b87a; }
+    .btn:active { transform: scale(.98); }
+
+    .footer {
+      text-align: center;
+      margin-top: 1.6rem;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <div class="brand">
+    <div class="brand-icon">F</div>
+    <span class="brand-name">FuelForge</span>
+  </div>
+
+  <h1>Create account</h1>
+  <p class="subtitle">Start your nutrition journey today.</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="alerts">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('register.register') }}" novalidate>
+
+    <!-- Email -->
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email"
+             placeholder="you@example.com"
+             value="{{ email }}"
+             autocomplete="email" required />
+    </div>
+
+    <!-- Password -->
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password"
+             placeholder="••••••••••••"
+             autocomplete="new-password" required />
+      <div class="pw-rules">
+        <div class="pw-rule" id="rule-len">  <span class="dot"></span> 12+ characters</div>
+        <div class="pw-rule" id="rule-upper"><span class="dot"></span> One uppercase letter</div>
+        <div class="pw-rule" id="rule-lower"><span class="dot"></span> One lowercase letter</div>
+        <div class="pw-rule" id="rule-num">  <span class="dot"></span> One number</div>
+        <div class="pw-rule" id="rule-spec"> <span class="dot"></span> One special character</div>
+      </div>
+    </div>
+
+    <!-- Confirm password -->
+    <div class="field">
+      <label for="confirm_password">Confirm Password</label>
+      <input type="password" id="confirm_password" name="confirm_password"
+             placeholder="••••••••••••"
+             autocomplete="new-password" required />
+    </div>
+
+    <hr class="divider"/>
+    <p class="section-label">Profile (optional)</p>
+
+    <div class="grid-2">
+      <div class="field">
+        <label for="weight">Weight (kg)</label>
+        <input type="number" id="weight" name="weight" placeholder="75" min="0" step="0.1"/>
+      </div>
+      <div class="field">
+        <label for="height">Height (cm)</label>
+        <input type="number" id="height" name="height" placeholder="175" min="0"/>
+      </div>
+      <div class="field">
+        <label for="age">Age</label>
+        <input type="number" id="age" name="age" placeholder="25" min="0"/>
+      </div>
+      <div class="field">
+        <label for="budget">Budget ($/wk)</label>
+        <input type="number" id="budget" name="budget" placeholder="150" min="0"/>
+      </div>
+    </div>
+
+    <button type="submit" class="btn">Create Account</button>
+  </form>
+
+  <p class="footer">
+    Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+  </p>
+
+</div>
+
+<script>
+  const pwInput   = document.getElementById('password');
+  const confInput = document.getElementById('confirm_password');
+
+  const rules = {
+    'rule-len':   (v) => v.length >= 12,
+    'rule-upper': (v) => /[A-Z]/.test(v),
+    'rule-lower': (v) => /[a-z]/.test(v),
+    'rule-num':   (v) => /\d/.test(v),
+    'rule-spec':  (v) => /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'\/`~]/.test(v),
+  };
+
+  pwInput.addEventListener('input', () => {
+    const val = pwInput.value;
+    for (const [id, test] of Object.entries(rules)) {
+      document.getElementById(id).classList.toggle('pass', test(val));
+    }
+    // Also re-check confirm match
+    checkConfirm();
+  });
+
+  function checkConfirm() {
+    if (confInput.value.length === 0) {
+      confInput.classList.remove('invalid');
+      return;
+    }
+    confInput.classList.toggle('invalid', confInput.value !== pwInput.value);
+  }
+
+  confInput.addEventListener('input', checkConfirm);
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>{{ d.app_name }} – Meal Plan</title>
+<title>FUELFORGE &#8211; Meal Plan</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #0d0d0d; color: #e8e8e8; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
@@ -106,77 +106,80 @@
   <div class="brand">
     <div class="brand-icon">FF</div>
     <div>
-      <div class="brand-text">{{ d.app_name }}</div>
-      <div class="brand-sub">{{ d.tagline }}</div>
+      <div class="brand-text">FUELFORGE</div>
+      <div class="brand-sub">AI Meal Planner</div>
     </div>
   </div>
   <div class="nav-links">
-    {% for item in d.nav %}
-      <a href="#" class="{{ 'active' if item == d.active_nav else '' }}">{{ item }}</a>
-    {% endfor %}
+    <a href="#">Home</a>
+    <a href="#" class="active">Meal Plan</a>
+    <a href="#">Progress</a>
+    <a href="#">Grocery</a>
+    <a href="#">Scanner</a>
   </div>
 </nav>
 
 <main>
   <div class="plan-badge">&#10003; YOUR PLAN</div>
   <h1>7-Day Meal Plan</h1>
-  <p class="subtitle">Personalized by <b>Gemini AI</b> for your {{ d.plan_goal }} goals</p>
+  <p class="subtitle">Personalized by <b>Gemini AI</b> for your muscle gain goals</p>
 
   <!-- Day Tabs -->
   <div class="tabs">
-    {% for day in d.days %}
-    <button class="tab {{ 'active' if loop.first else '' }}" onclick="switchDay({{ loop.index0 }})">
-      <div class="tab-label">{{ day.label }}</div>
-      <div class="tab-name">{{ day.name }}</div>
+    <button class="tab active" onclick="switchDay(0)">
+      <div class="tab-label">DAY 1</div>
+      <div class="tab-name">Monday</div>
     </button>
-    {% endfor %}
+    <button class="tab" onclick="switchDay(1)">
+      <div class="tab-label">DAY 2</div>
+      <div class="tab-name">Tuesday</div>
+    </button>
+    <button class="tab" onclick="switchDay(2)">
+      <div class="tab-label">DAY 3</div>
+      <div class="tab-name">Wednesday</div>
+    </button>
   </div>
 
-  <!-- Day Sections -->
-  {% for day in d.days %}
-  <div class="day-section {{ 'active' if loop.first else '' }}" id="day-{{ loop.index0 }}">
-
-    <!-- Daily Totals -->
+  <!-- ── DAY 1: Monday ── -->
+  <div class="day-section active" id="day-0">
     <div class="totals-card">
-      <div class="totals-title">Daily Totals &ndash; {{ day.name }}</div>
+      <div class="totals-title">Daily Totals &ndash; Monday</div>
       <div class="totals-grid">
         <div class="total-item">
           <div class="t-label">Total Calories</div>
-          <div class="t-val cal">{{ day.totals.calories }}</div>
+          <div class="t-val cal">2850</div>
         </div>
         <div class="total-item">
           <div class="t-label">Protein</div>
-          <div class="t-val pro">{{ day.totals.protein }}<span>g</span></div>
+          <div class="t-val pro">215<span>g</span></div>
         </div>
         <div class="total-item">
           <div class="t-label">Carbs</div>
-          <div class="t-val carb">{{ day.totals.carbs }}<span>g</span></div>
+          <div class="t-val carb">285<span>g</span></div>
         </div>
         <div class="total-item">
           <div class="t-label">Fat</div>
-          <div class="t-val fat">{{ day.totals.fat }}<span>g</span></div>
+          <div class="t-val fat">90<span>g</span></div>
         </div>
       </div>
     </div>
 
-    <!-- Meals -->
-    {% for meal in day.meals %}
-    {% set panel_id = "panel-" ~ loop.index0 ~ "-" ~ loop.index0 %}
-    <div class="meal-card-wrapper" id="wrapper-{{ loop.depth0 }}-{{ loop.index0 }}">
+    <!-- Breakfast -->
+    <div class="meal-card-wrapper" id="wrapper-0-0">
       <div class="meal-card">
-        <img class="meal-img" src="{{ meal.image }}" alt="{{ meal.name }}" onerror="this.style.display='none'"/>
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/c400ok1764439058.jpg" alt="Power Oatmeal Bowl" onerror="this.style.display='none'"/>
         <div class="meal-body">
           <div>
             <div class="meal-top">
-              <span class="meal-badge badge-{{ meal.type | lower }}">{{ meal.type | upper }}</span>
-              <span class="meal-time">&#9201; {{ meal.time }} min</span>
+              <span class="meal-badge badge-breakfast">BREAKFAST</span>
+              <span class="meal-time">&#9201; 10 min</span>
             </div>
-            <div class="meal-name">{{ meal.name }}</div>
+            <div class="meal-name">Power Oatmeal Bowl</div>
             <div class="meal-macros">
-              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">{{ meal.calories }}</div></div>
-              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">{{ meal.protein }}g</div></div>
-              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">{{ meal.carbs }}g</div></div>
-              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">{{ meal.fat }}g</div></div>
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">520</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">52g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">72g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">12g</div></div>
             </div>
           </div>
           <button class="view-recipe-btn" onclick="toggleRecipe(this)">
@@ -192,24 +195,639 @@
         </div>
         <div class="recipe-content active" data-tab="ingredients">
           <ul class="ingredient-list">
-            {% for item in meal.ingredients %}
-            <li>{{ item }}</li>
-            {% endfor %}
+            <li>1 cup rolled oats</li>
+            <li>2 scoops whey protein</li>
+            <li>1 cup mixed berries</li>
+            <li>2 tbsp almond butter</li>
+            <li>1 tbsp honey</li>
+            <li>1/2 cup almond milk</li>
           </ul>
         </div>
         <div class="recipe-content" data-tab="instructions">
           <ol class="instruction-list">
-            {% for step in meal.instructions %}
-            <li>{{ step }}</li>
-            {% endfor %}
+            <li>Bring almond milk to a simmer in a saucepan.</li>
+            <li>Stir in rolled oats and cook for 5 minutes.</li>
+            <li>Remove from heat and mix in whey protein.</li>
+            <li>Top with mixed berries, almond butter, and a drizzle of honey.</li>
           </ol>
         </div>
       </div>
     </div>
-    {% endfor %}
 
+    <!-- Lunch -->
+    <div class="meal-card-wrapper" id="wrapper-0-1">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/1525872624.jpg" alt="Grilled Chicken Power Bowl" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-lunch">LUNCH</span>
+              <span class="meal-time">&#9201; 20 min</span>
+            </div>
+            <div class="meal-name">Grilled Chicken Power Bowl</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">480</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">58g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">65g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">18g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>200g chicken breast</li>
+            <li>1 cup brown rice</li>
+            <li>1/2 cup black beans</li>
+            <li>1/2 avocado</li>
+            <li>1/4 cup salsa</li>
+            <li>1 tsp olive oil</li>
+            <li>Salt, pepper, cumin to taste</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Season chicken with salt, pepper, and cumin.</li>
+            <li>Grill chicken 6-7 min per side until cooked through.</li>
+            <li>Cook brown rice according to package instructions.</li>
+            <li>Slice chicken and arrange over rice with beans, avocado, and salsa.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Snack -->
+    <div class="meal-card-wrapper" id="wrapper-0-2">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/y2irzl1585563479.jpg" alt="Greek Yogurt Protein Pack" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-snack">SNACK</span>
+              <span class="meal-time">&#9201; 5 min</span>
+            </div>
+            <div class="meal-name">Greek Yogurt Protein Pack</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">320</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">35g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">28g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">8g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>1 cup plain Greek yogurt (0% fat)</li>
+            <li>1 scoop vanilla protein powder</li>
+            <li>1/4 cup granola</li>
+            <li>1/2 cup blueberries</li>
+            <li>1 tsp honey</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Stir protein powder into Greek yogurt until smooth.</li>
+            <li>Pour into a bowl.</li>
+            <li>Top with granola, blueberries, and a drizzle of honey.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dinner -->
+    <div class="meal-card-wrapper" id="wrapper-0-3">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/1548772327.jpg" alt="Herb Crusted Salmon & Sweet Potato" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-dinner">DINNER</span>
+              <span class="meal-time">&#9201; 35 min</span>
+            </div>
+            <div class="meal-name">Herb Crusted Salmon &amp; Sweet Potato</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">760</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">52g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">68g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">28g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>200g salmon fillet</li>
+            <li>1 large sweet potato</li>
+            <li>2 tbsp olive oil</li>
+            <li>2 cloves garlic (minced)</li>
+            <li>1 tbsp fresh dill</li>
+            <li>1 tbsp fresh parsley</li>
+            <li>Lemon juice, salt, pepper</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Preheat oven to 200&#176;C (400&#176;F).</li>
+            <li>Cube sweet potato, toss in 1 tbsp olive oil, roast for 25 min.</li>
+            <li>Mix garlic, dill, parsley, and remaining olive oil; coat salmon.</li>
+            <li>Bake salmon for 12-15 min until it flakes easily.</li>
+            <li>Serve salmon over roasted sweet potato with a squeeze of lemon.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
   </div>
-  {% endfor %}
+
+  <!-- ── DAY 2: Tuesday ── -->
+  <div class="day-section" id="day-1">
+    <div class="totals-card">
+      <div class="totals-title">Daily Totals &ndash; Tuesday</div>
+      <div class="totals-grid">
+        <div class="total-item">
+          <div class="t-label">Total Calories</div>
+          <div class="t-val cal">2780</div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Protein</div>
+          <div class="t-val pro">210<span>g</span></div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Carbs</div>
+          <div class="t-val carb">270<span>g</span></div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Fat</div>
+          <div class="t-val fat">88<span>g</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Breakfast -->
+    <div class="meal-card-wrapper" id="wrapper-1-0">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/yvpuuy1511797244.jpg" alt="Egg White Veggie Omelette" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-breakfast">BREAKFAST</span>
+              <span class="meal-time">&#9201; 15 min</span>
+            </div>
+            <div class="meal-name">Egg White Veggie Omelette</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">480</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">48g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">20g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">14g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>6 egg whites</li>
+            <li>1/2 cup spinach</li>
+            <li>1/4 cup diced bell pepper</li>
+            <li>1/4 cup mushrooms</li>
+            <li>2 tbsp diced onion</li>
+            <li>1 tsp olive oil</li>
+            <li>Salt and pepper to taste</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Heat olive oil in a non-stick pan over medium heat.</li>
+            <li>Saut&#233; vegetables for 3 minutes until softened.</li>
+            <li>Pour egg whites over vegetables.</li>
+            <li>Cook until edges set, then fold omelette in half.</li>
+            <li>Slide onto plate and season with salt and pepper.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lunch -->
+    <div class="meal-card-wrapper" id="wrapper-1-1">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/k29viq1585565980.jpg" alt="Turkey & Quinoa Salad" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-lunch">LUNCH</span>
+              <span class="meal-time">&#9201; 15 min</span>
+            </div>
+            <div class="meal-name">Turkey &amp; Quinoa Salad</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">520</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">55g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">62g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">16g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>150g cooked turkey breast (sliced)</li>
+            <li>1 cup cooked quinoa</li>
+            <li>2 cups mixed greens</li>
+            <li>1/4 cup cherry tomatoes</li>
+            <li>1/4 cucumber (diced)</li>
+            <li>2 tbsp olive oil</li>
+            <li>1 tbsp lemon juice</li>
+            <li>Salt and pepper</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Cook quinoa and let it cool.</li>
+            <li>Combine greens, tomatoes, cucumber, and quinoa in a bowl.</li>
+            <li>Slice turkey breast and place on top.</li>
+            <li>Whisk olive oil and lemon juice for dressing.</li>
+            <li>Drizzle dressing over salad and toss gently.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Snack -->
+    <div class="meal-card-wrapper" id="wrapper-1-2">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/fqpqml1764359125.jpg" alt="Cottage Cheese & Berries" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-snack">SNACK</span>
+              <span class="meal-time">&#9201; 3 min</span>
+            </div>
+            <div class="meal-name">Cottage Cheese &amp; Berries</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">280</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">30g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">32g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">6g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>1 cup low-fat cottage cheese</li>
+            <li>1/2 cup strawberries (sliced)</li>
+            <li>1/2 cup blueberries</li>
+            <li>1 tsp honey</li>
+            <li>Pinch of cinnamon</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Spoon cottage cheese into a bowl.</li>
+            <li>Top with strawberries and blueberries.</li>
+            <li>Drizzle with honey and sprinkle cinnamon.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dinner -->
+    <div class="meal-card-wrapper" id="wrapper-1-3">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/kyuxew1763479470.jpg" alt="Lean Beef Stir Fry & Brown Rice" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-dinner">DINNER</span>
+              <span class="meal-time">&#9201; 30 min</span>
+            </div>
+            <div class="meal-name">Lean Beef Stir Fry &amp; Brown Rice</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">720</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">58g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">72g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">22g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>200g lean beef strips</li>
+            <li>1 cup brown rice</li>
+            <li>1 cup broccoli florets</li>
+            <li>1/2 cup snap peas</li>
+            <li>1/2 red bell pepper</li>
+            <li>2 tbsp soy sauce</li>
+            <li>1 tbsp sesame oil</li>
+            <li>2 cloves garlic</li>
+            <li>1 tsp ginger (grated)</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Cook brown rice according to package instructions.</li>
+            <li>Heat sesame oil in a wok over high heat.</li>
+            <li>Stir-fry beef strips for 3-4 minutes; set aside.</li>
+            <li>Stir-fry vegetables with garlic and ginger for 3 minutes.</li>
+            <li>Return beef to wok, add soy sauce, toss to combine.</li>
+            <li>Serve over brown rice.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DAY 3: Wednesday ── -->
+  <div class="day-section" id="day-2">
+    <div class="totals-card">
+      <div class="totals-title">Daily Totals &ndash; Wednesday</div>
+      <div class="totals-grid">
+        <div class="total-item">
+          <div class="t-label">Total Calories</div>
+          <div class="t-val cal">2900</div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Protein</div>
+          <div class="t-val pro">220<span>g</span></div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Carbs</div>
+          <div class="t-val carb">295<span>g</span></div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Fat</div>
+          <div class="t-val fat">92<span>g</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Breakfast -->
+    <div class="meal-card-wrapper" id="wrapper-2-0">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/sywswr1511383814.jpg" alt="Protein Pancakes & Banana" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-breakfast">BREAKFAST</span>
+              <span class="meal-time">&#9201; 20 min</span>
+            </div>
+            <div class="meal-name">Protein Pancakes &amp; Banana</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">560</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">50g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">80g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">10g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>1 cup oat flour</li>
+            <li>2 scoops protein powder</li>
+            <li>2 eggs</li>
+            <li>1/2 cup almond milk</li>
+            <li>1 tsp baking powder</li>
+            <li>1 banana (sliced)</li>
+            <li>1 tbsp maple syrup</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Mix oat flour, protein powder, and baking powder in a bowl.</li>
+            <li>Whisk in eggs and almond milk until smooth batter forms.</li>
+            <li>Heat a non-stick pan over medium heat.</li>
+            <li>Pour 1/4 cup batter per pancake; cook 2 min per side.</li>
+            <li>Stack pancakes and top with banana slices and maple syrup.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lunch -->
+    <div class="meal-card-wrapper" id="wrapper-2-1">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/yypwwq1511304979.jpg" alt="Tuna & Avocado Rice Bowl" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-lunch">LUNCH</span>
+              <span class="meal-time">&#9201; 10 min</span>
+            </div>
+            <div class="meal-name">Tuna &amp; Avocado Rice Bowl</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">510</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">52g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">68g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">20g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>1 can tuna in water (drained)</li>
+            <li>1 cup cooked white rice</li>
+            <li>1/2 avocado (sliced)</li>
+            <li>1/4 cucumber (sliced)</li>
+            <li>1 tbsp soy sauce</li>
+            <li>1 tsp sesame seeds</li>
+            <li>1/2 tsp sriracha (optional)</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Cook rice and let it cool slightly.</li>
+            <li>Flake drained tuna with a fork.</li>
+            <li>Arrange rice in a bowl; top with tuna, avocado, and cucumber.</li>
+            <li>Drizzle with soy sauce and sriracha.</li>
+            <li>Sprinkle sesame seeds before serving.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Snack -->
+    <div class="meal-card-wrapper" id="wrapper-2-2">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/si2rty1763282314.jpg" alt="Protein Bar & Almonds" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-snack">SNACK</span>
+              <span class="meal-time">&#9201; 1 min</span>
+            </div>
+            <div class="meal-name">Protein Bar &amp; Almonds</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">340</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">28g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">30g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">14g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>1 high-protein bar (20g+ protein)</li>
+            <li>30g raw almonds</li>
+            <li>1 cup water</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Grab a protein bar with at least 20g protein.</li>
+            <li>Pair with a handful of raw almonds.</li>
+            <li>Drink plenty of water to stay hydrated.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dinner -->
+    <div class="meal-card-wrapper" id="wrapper-2-3">
+      <div class="meal-card">
+        <img class="meal-img" src="https://www.themealdb.com/images/media/meals/nlxald1764112200.jpg" alt="Baked Chicken Thighs & Vegetables" onerror="this.style.display='none'"/>
+        <div class="meal-body">
+          <div>
+            <div class="meal-top">
+              <span class="meal-badge badge-dinner">DINNER</span>
+              <span class="meal-time">&#9201; 40 min</span>
+            </div>
+            <div class="meal-name">Baked Chicken Thighs &amp; Vegetables</div>
+            <div class="meal-macros">
+              <div class="macro-item"><div class="m-label">Calories</div><div class="m-val cal">730</div></div>
+              <div class="macro-item"><div class="m-label">Protein</div><div class="m-val pro">60g</div></div>
+              <div class="macro-item"><div class="m-label">Carbs</div><div class="m-val carb">65g</div></div>
+              <div class="macro-item"><div class="m-label">Fat</div><div class="m-val fat">26g</div></div>
+            </div>
+          </div>
+          <button class="view-recipe-btn" onclick="toggleRecipe(this)">
+            <span class="btn-label">View Recipe</span>
+            <span class="arrow">&#8964;</span>
+          </button>
+        </div>
+      </div>
+      <div class="recipe-panel">
+        <div class="recipe-tabs">
+          <button class="rtab active" onclick="switchTab(this, 'ingredients')">Ingredients</button>
+          <button class="rtab" onclick="switchTab(this, 'instructions')">Instructions</button>
+        </div>
+        <div class="recipe-content active" data-tab="ingredients">
+          <ul class="ingredient-list">
+            <li>4 chicken thighs (bone-in, skin-on)</li>
+            <li>1 cup broccoli</li>
+            <li>1 cup carrots (chopped)</li>
+            <li>1 zucchini (sliced)</li>
+            <li>2 tbsp olive oil</li>
+            <li>1 tsp garlic powder</li>
+            <li>1 tsp paprika</li>
+            <li>Salt, pepper, fresh thyme</li>
+          </ul>
+        </div>
+        <div class="recipe-content" data-tab="instructions">
+          <ol class="instruction-list">
+            <li>Preheat oven to 220&#176;C (425&#176;F).</li>
+            <li>Rub chicken thighs with olive oil, garlic powder, paprika, salt, and pepper.</li>
+            <li>Arrange chicken and vegetables on a baking sheet.</li>
+            <li>Drizzle vegetables with remaining olive oil and season.</li>
+            <li>Bake for 35-40 min until chicken skin is crispy and internal temp reaches 75&#176;C.</li>
+            <li>Rest 5 minutes before serving.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>

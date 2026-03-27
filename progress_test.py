@@ -6,11 +6,11 @@ progress_bp = Blueprint('progress', __name__)
 
 
 def update_streak(uid, conn):
-    """Auto-update login streak on each /progress visit."""
-    user = dict(conn.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone())
+    """Increment streak on new day, reset if a day was missed, no-op if same day."""
+    user      = dict(conn.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone())
     today     = date.today().isoformat()
     yesterday = (date.today() - timedelta(days=1)).isoformat()
-    last      = user.get("last_login_date", "") or ""
+    last      = user.get("last_login_date") or ""
 
     if last == today:
         return user  # already counted today
@@ -43,7 +43,6 @@ def progress():
     uid  = session["uid"]
     conn = get_db()
 
-    # Streak update + user profile
     user = update_streak(uid, conn)
 
     # Weight logs for chart
@@ -65,27 +64,14 @@ def progress():
     start_w   = goal.get("start_weight", current_w)
     goal_w    = goal.get("goal_weight",  current_w)
 
-    # Safe calculations — avoid division by zero
     kg_lost    = round(start_w - current_w, 1)
     goal_total = round(abs(start_w - goal_w), 1)
 
-    if goal_total > 0:
-        progress_pct = round(min(abs(kg_lost) / goal_total * 100, 100), 1)
-    else:
-        progress_pct = 0
+    progress_pct = round(min(abs(kg_lost) / goal_total * 100, 100), 1) if goal_total > 0 else 0
 
     days_on_journey = max(len(logs), user["total_active_days"], 1)
-
-    if days_on_journey > 0 and kg_lost != 0:
-        kg_per_day = round(abs(kg_lost) / days_on_journey, 2)
-    else:
-        kg_per_day = 0
-
-    if kg_per_day > 0 and current_w > goal_w:
-        days_to_goal = round((current_w - goal_w) / kg_per_day)
-    else:
-        days_to_goal = 0
-
+    kg_per_day      = round(abs(kg_lost) / days_on_journey, 2) if kg_lost != 0 else 0
+    days_to_goal    = round((current_w - goal_w) / kg_per_day) if kg_per_day > 0 and current_w > goal_w else 0
     consistency_pct = round(user["total_active_days"] / days_on_journey * 100) if days_on_journey else 0
 
     data = {
@@ -94,7 +80,6 @@ def progress():
         "nav":              ["Home", "Meal Plan", "Progress", "Goals", "Grocery", "Scanner"],
         "active_nav":       "Progress",
 
-        # Weight stats
         "starting_weight":  start_w,
         "starting_date":    goal.get("created", "—"),
         "current_weight":   current_w,
@@ -102,30 +87,25 @@ def progress():
         "goal_weight":      goal_w,
         "kg_to_go":         round(max(current_w - goal_w, 0), 1),
 
-        # Journey stats
         "kg_lost":          abs(kg_lost),
         "kg_remaining":     round(max(current_w - goal_w, 0), 1),
         "days_on_journey":  days_on_journey,
         "goal_total_kg":    goal_total,
         "progress_pct":     progress_pct,
 
-        # Streaks
         "current_streak":   user["current_streak"],
         "longest_streak":   user["longest_streak"],
         "total_active_days":user["total_active_days"],
         "consistency_pct":  consistency_pct,
 
-        # Chart
         "chart_labels":     chart_labels,
         "chart_weights":    chart_weights,
         "goal_line":        goal_w,
 
-        # Predictions
         "kg_per_day":       kg_per_day,
         "weeks_in":         round(days_on_journey / 7, 1),
         "days_to_goal":     days_to_goal,
 
-        # Goal info for display
         "goal_title":       goal.get("title", "No active goal"),
         "goal_deadline":    goal.get("deadline", "—"),
     }

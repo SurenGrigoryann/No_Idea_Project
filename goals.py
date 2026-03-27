@@ -1,23 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from datetime import date
-from database import get_db
+from database import get_db, upsert_weight_log
 
 goals_bp = Blueprint("goals", __name__)
 
-
-def log_weight_entry(conn, uid, weight):
-    """Insert or update today's weight log entry."""
-    existing = conn.execute(
-        "SELECT id FROM weight_logs WHERE user_id=? AND date=?",
-        (uid, date.today().isoformat())
-    ).fetchone()
-    if existing:
-        conn.execute("UPDATE weight_logs SET weight=? WHERE id=?", (weight, existing["id"]))
-    else:
-        conn.execute(
-            "INSERT INTO weight_logs (user_id, date, weight) VALUES (?, ?, ?)",
-            (uid, date.today().isoformat(), weight)
-        )
+VALID_ACTIVITY_LEVELS = {"very_low", "low", "medium", "high", "very_high"}
 
 
 @goals_bp.route("/goals", methods=["GET", "POST"])
@@ -37,7 +24,7 @@ def goals():
             if raw:
                 w = float(raw)
                 conn.execute("UPDATE users SET weight=? WHERE id=?", (w, uid))
-                log_weight_entry(conn, uid, w)
+                upsert_weight_log(conn, uid, w)
                 conn.commit()
                 flash("Weight logged!", "success")
             conn.close()
@@ -69,17 +56,15 @@ def goals():
             conn.close()
             return redirect(url_for("goals.goals"))
 
-        # ── Add new goal (default action) ────────────────────────────────
-        title       = request.form.get("title", "").strip()
-        goal_weight = request.form.get("goal_weight", "").strip()
-        current_w   = request.form.get("current_weight", "").strip()
-        deadline    = request.form.get("deadline", "").strip()
-        height      = request.form.get("height", "").strip()
-        age_val     = request.form.get("age", "").strip()
+        # ── Add new goal ─────────────────────────────────────────────────
+        title          = request.form.get("title", "").strip()
+        goal_weight    = request.form.get("goal_weight", "").strip()
+        current_w      = request.form.get("current_weight", "").strip()
+        deadline       = request.form.get("deadline", "").strip()
+        height         = request.form.get("height", "").strip()
+        age_val        = request.form.get("age", "").strip()
         budget         = request.form.get("budget", "").strip()
         activity_level = request.form.get("activity_level", "").strip()
-
-        valid_activity_levels = {"very_low", "low", "medium", "high", "very_high"}
 
         if not title or not goal_weight or not current_w:
             flash("Goal name, current weight, and target weight are required.", "error")
@@ -89,12 +74,12 @@ def goals():
         current_w   = float(current_w)
         goal_weight = float(goal_weight)
 
-        # Build dynamic UPDATE for profile fields
+        # Update profile — only fields that were actually submitted
         profile = {"weight": current_w}
         if height:  profile["height"] = float(height)
         if age_val: profile["age"]    = int(age_val)
         if budget:  profile["budget"] = float(budget)
-        if activity_level and activity_level in valid_activity_levels:
+        if activity_level and activity_level in VALID_ACTIVITY_LEVELS:
             profile["activity_level"] = activity_level
 
         set_clause = ", ".join(f"{k}=?" for k in profile)
@@ -103,14 +88,14 @@ def goals():
             (*profile.values(), uid)
         )
 
-        # Save goal
+        # Save the goal
         conn.execute("""
             INSERT INTO goals (user_id, title, goal_weight, start_weight, created, deadline, status)
             VALUES (?, ?, ?, ?, ?, ?, 'active')
         """, (uid, title, goal_weight, current_w, date.today().isoformat(), deadline))
 
-        # Log weight entry
-        log_weight_entry(conn, uid, current_w)
+        # Log today's weight
+        upsert_weight_log(conn, uid, current_w)
 
         conn.commit()
         conn.close()
@@ -142,7 +127,7 @@ def goals():
         "height":         user["height"],
         "age":            user["age"],
         "budget":         user["budget"],
-        "activity_level": user["activity_level"] or "medium",
+        "activity_level": user.get("activity_level") or "medium",
         "goals":          goals_list,
     }
 

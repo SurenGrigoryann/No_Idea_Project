@@ -5,12 +5,11 @@ from database import get_db
 
 register_bp = Blueprint("register", __name__)
 
+VALID_ACTIVITY_LEVELS = {"very_low", "low", "medium", "high", "very_high"}
+
 
 def validate_password(password: str):
-    """
-    Returns a list of error strings.
-    Empty list means the password passed all checks.
-    """
+    """Returns a list of error strings. Empty list = password passed."""
     errors = []
     if len(password) < 12:
         errors.append("At least 12 characters long")
@@ -28,26 +27,31 @@ def validate_password(password: str):
 @register_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        email     = request.form.get("email", "").strip().lower()
-        password  = request.form.get("password", "")
-        confirm   = request.form.get("confirm_password", "")
+        email          = request.form.get("email", "").strip().lower()
+        password       = request.form.get("password", "")
+        confirm        = request.form.get("confirm_password", "")
+        activity_level = request.form.get("activity_level", "medium").strip()
 
-        # ── Password match ───────────────────────────────────────────────
+        # Validate activity level
+        if activity_level not in VALID_ACTIVITY_LEVELS:
+            activity_level = "medium"
+
+        # Password match
         if password != confirm:
             flash("Passwords do not match.", "error")
             return render_template("register.html", email=email)
 
-        # ── Password strength ────────────────────────────────────────────
+        # Password strength
         errors = validate_password(password)
         if errors:
             for e in errors:
                 flash(e, "error")
             return render_template("register.html", email=email)
 
-        # ── Duplicate email check ────────────────────────────────────────
+        # Duplicate email check
         conn = get_db()
         existing = conn.execute(
-            "SELECT id FROM users WHERE email = ?", (email,)
+            "SELECT id FROM users WHERE email=?", (email,)
         ).fetchone()
 
         if existing:
@@ -55,17 +59,19 @@ def register():
             flash("An account with that email already exists.", "error")
             return render_template("register.html", email=email)
 
-        # ── All good — create user ───────────────────────────────────────
+        # Create user — save all profile fields including activity_level
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
         cur = conn.execute("""
-            INSERT INTO users (email, password_hash, weight, height, age, budget)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO users (email, password_hash, weight, height, age, budget, activity_level)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
-            email, hashed,
-            float(request.form.get("weight", 0)),
-            float(request.form.get("height", 0)),
-            int(request.form.get("age", 0)),
-            float(request.form.get("budget", 0)),
+            email,
+            hashed,
+            float(request.form.get("weight", 0) or 0),
+            float(request.form.get("height", 0) or 0),
+            int(request.form.get("age", 0)    or 0),
+            float(request.form.get("budget", 0) or 0),
+            activity_level,
         ))
         conn.commit()
         session["uid"]  = cur.lastrowid
